@@ -1,0 +1,13 @@
+@theme {
+  --breakpoint-sm: 40rem;
+  --breakpoint-md: 48rem;
+  --breakpoint-lg: 64rem;
+  --breakpoint-xl: 80rem;
+  --breakpoint-2xl: 96rem;
+}
+
+@custom-media --sm (min-width: 40rem);
+@custom-media --md (min-width: 48rem);
+@custom-media --lg (min-width: 64rem);
+@custom-media --xl (min-width: 80rem);
+@custom-media --2xl (min-width: 96rem);

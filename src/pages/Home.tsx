@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
-import '../App.css'
+import './Home.css'
 
 import { fetchBooks } from '@/services/google/GoogleBooksService';
 import type { GoogleBook } from '@/types/googleBooks';
-import BookCard from '@/components/BookCard';
+import BookCard from '@/components/book/BookCard';
 import SearchForm from '@/components/search/SearchForm';
 
 const Home = () => {
