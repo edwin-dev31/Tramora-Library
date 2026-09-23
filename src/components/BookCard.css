@@ -4,9 +4,9 @@
   padding: 16px;
   border: 1px solid var(--border);
   border-radius: 10px;
-  background: var(--bg);
+  background: var(--card);
   text-align: left;
-  box-shadow: var(--shadow);
+  box-shadow: rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
 }
 
 .book-cover {
@@ -15,7 +15,7 @@
   height: 165px;
   object-fit: cover;
   border-radius: 6px;
-  background: var(--code-bg);
+  background: var(--muted);
 }
 
 .book-cover--placeholder {
@@ -23,7 +23,7 @@
   place-items: center;
   padding: 8px;
   font-size: 14px;
-  color: var(--text);
+  color: var(--muted-foreground);
   text-align: center;
 }
 
@@ -37,21 +37,21 @@
 .book-title {
   font-size: 18px;
   font-weight: 600;
-  color: var(--text-h);
+  color: var(--card-foreground);
   margin: 0;
 }
 
 .book-authors,
 .book-meta {
   font-size: 14px;
-  color: var(--text);
+  color: var(--muted-foreground);
   margin: 0;
 }
 
 .book-description {
   font-size: 14px;
   line-height: 145%;
-  color: var(--text);
+  color: var(--muted-foreground);
   margin: 0;
   overflow: hidden;
   display: -webkit-box;
