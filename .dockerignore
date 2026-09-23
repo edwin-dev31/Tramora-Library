@@ -10,3 +10,4 @@
 !public/**
 !docker/
 !docker/nginx.conf
+!docker/entrypoint.sh

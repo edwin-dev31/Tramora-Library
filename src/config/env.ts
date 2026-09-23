@@ -1,4 +1,12 @@
-const required = (name: string, value: string | undefined): string => {
+declare global {
+  interface Window {
+    __APP_CONFIG__?: Record<string, string>;
+  }
+}
+
+export const getEnv = (name: string): string => {
+  const value = window.__APP_CONFIG__?.[name]
+    ?? (import.meta.env.DEV ? import.meta.env[name] : undefined);
   if (!value) {
     throw new Error(`❌ Environment variable not found: ${name}`);
   }
@@ -6,6 +14,6 @@ const required = (name: string, value: string | undefined): string => {
 }
 
 export const env = {
-  GOOGLE_API_URL: required("VITE_GOOGLE_API_URL", import.meta.env.VITE_GOOGLE_API_URL),
-  GOOGLE_BOOKS_KEY: required("VITE_GOOGLE_BOOKS_KEY", import.meta.env.VITE_GOOGLE_BOOKS_KEY),
+  GOOGLE_API_URL: getEnv("VITE_GOOGLE_API_URL"),
+  GOOGLE_BOOKS_KEY: getEnv("VITE_GOOGLE_BOOKS_KEY"),
 };
