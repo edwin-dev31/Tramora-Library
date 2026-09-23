@@ -6,7 +6,7 @@ export type SearchCategory = {
 
 export const ALL_FIELDS: SearchCategory = {
   label: 'All fields',
-  keyword: '',
+  keyword: 'all',
   placeholder: 'Enter a search term, e.g. harry potter',
 };
 
