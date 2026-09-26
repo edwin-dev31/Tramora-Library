@@ -1,14 +1,13 @@
-import type { GoogleBook } from '@/types/googleBooks';
+import type { Book } from '@/types/books';
 import { Card, CardContent } from '@/components/ui/card';
 import './BookCard.css';
 
 interface BookCardProps {
-  book: GoogleBook;
+  book: Book;
 }
 
 const BookCard = ({ book }: BookCardProps) => {
-  const { volumeInfo } = book;
-  const cover = volumeInfo.imageLinks?.thumbnail;
+  const cover = book.coverUrl;
 
   return (
     <article>
@@ -17,23 +16,23 @@ const BookCard = ({ book }: BookCardProps) => {
           {cover ? (
             <img
               src={cover}
-              alt={`Cover of ${volumeInfo.title}`}
+              alt={`Cover of ${book.title}`}
               className="book-cover"
             />
           ) : (
-            <div className="book-cover book-cover--placeholder">{volumeInfo.title}</div>
+            <div className="book-cover book-cover--placeholder">{book.title}</div>
           )}
 
           <div className="book-info">
-            <h3 className="book-title" title={volumeInfo.title}>{volumeInfo.title}</h3>
-            <p className="book-authors">{volumeInfo.authors?.join(', ') ?? 'Unknown author'}</p>
+            <h3 className="book-title" title={book.title}>{book.title}</h3>
+            <p className="book-authors">{book.authors.join(', ') || 'Unknown author'}</p>
 
-            {volumeInfo.publishedDate && (
-              <p className="book-meta">{volumeInfo.publishedDate}</p>
+            {book.publishedDate && (
+              <p className="book-meta">{book.publishedDate}</p>
             )}
 
-            {volumeInfo.description && (
-              <p className="book-description">{volumeInfo.description}</p>
+            {book.description && (
+              <p className="book-description">{book.description}</p>
             )}
           </div>
         </CardContent>

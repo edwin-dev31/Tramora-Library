@@ -1,54 +1,37 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import './Home.css'
 
-import { fetchBooks } from '@/services/google/GoogleBooksService';
-import type { GoogleBook } from '@/types/googleBooks';
+import type { Book, SearchOptions } from '@/types/books';
+import type { Page } from '@/types/api';
 import BookCard from '@/components/book/BookCard';
 import SearchForm from '@/components/search/SearchForm';
+import { API_ROUTES } from '@/constants/api.constants';
+import { env } from '@/config/env';
+import { useFetch } from '@/hooks/useFetch';
 
 const Home = () => {
-  const [activeQuery, setActiveQuery] = useState('');
+  const [url, setUrl] = useState<string | null>(null);
+  const { data, error, isLoading } = useFetch<Page<Book>>(url);
 
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [books, setBooks] = useState<GoogleBook[]>([]);
+  const handleSearch = (options: SearchOptions) => {
+    const params = new URLSearchParams({
+      query: options.query,
+      field: options.field ?? 'all',
+      limit: String(options.limit ?? 10),
+      offset: String(options.offset ?? 0),
+    });
+    const baseUrl = env.API_URL.replace(/\/$/, '');
+    setUrl(`${baseUrl}${API_ROUTES.BOOKS}?${params}`);
+  };
 
-  const handleSearch = (query: string) => {
-    setLoading(true);
-    setError('');
-    setActiveQuery(query);
-  }
-
-  useEffect(() => {
-    if (!activeQuery.trim()) return;
-    let cancelled = false;
-
-    fetchBooks({ query: activeQuery })
-      .then((data) => {
-        if (cancelled) return;
-        setBooks(data.items ?? []);
-      })
-      .catch((err: Error) => {
-        if (cancelled) return;
-        setError(err.message);
-        console.error(err);
-      })
-      .finally(() => {
-        if (!cancelled) setLoading(false);
-        console.log('Fetch completed');
-      });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [activeQuery]);
+  const books = data?.items ?? [];
 
   return (
     <div>
 
       <SearchForm onSearch={handleSearch} />
 
-      {loading && <p>Loading...</p>}
+      {isLoading && <p>Loading...</p>}
       {error && <p className="error">{error}</p>}
 
       <div className="results">

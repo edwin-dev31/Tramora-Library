@@ -1,4 +1,5 @@
 import { useState, type SubmitEventHandler } from 'react';
+import type { SearchField, SearchOptions } from '@/types/books';
 import { ALL_FIELDS, SEARCH_CATEGORIES } from './searchCategories';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -11,14 +12,14 @@ import {
 } from '@/components/ui/select';
 
 interface SearchFormProps {
-  onSearch: (query: string) => void;
+  onSearch: (options: SearchOptions) => void;
 }
 
 const FIELDS = [ALL_FIELDS, ...SEARCH_CATEGORIES];
 
 const SearchForm = ({ onSearch }: SearchFormProps) => {
   const [text, setText] = useState('');
-  const [keyword, setKeyword] = useState(ALL_FIELDS.keyword);
+  const [keyword, setKeyword] = useState<SearchField>(ALL_FIELDS.keyword);
 
   const field = FIELDS.find((f) => f.keyword === keyword) ?? ALL_FIELDS;
 
@@ -27,15 +28,14 @@ const SearchForm = ({ onSearch }: SearchFormProps) => {
     const term = text.trim();
     if (!term) return;
 
-    const query = field.keyword === 'all' ? term : `${field.keyword}:${term}`;
-    onSearch(query);
+    onSearch({ query: term, field: field.keyword });
   };
 
   return (
     <form onSubmit={handleSubmit}>
       <Select
         value={keyword}
-        onValueChange={setKeyword}
+        onValueChange={(value) => setKeyword(value as SearchField)}
       >
         <SelectTrigger aria-label="Search field">
           <SelectValue />
