@@ -1,6 +1,11 @@
 import { useEffect, useState } from 'react';
-import type { ApiResponse } from '@/types/api';
-import type { UseFetchResult } from '@/types/use-fetch.types';
+import { fetchJson, ApiError } from '@/lib/fetch';
+
+export interface UseFetchResult<T> {
+  data: T | null;
+  error: string;
+  isLoading: boolean;
+}
 
 export const useFetch = <T>(url: string | null): UseFetchResult<T> => {
   const [result, setResult] = useState<{
@@ -14,21 +19,14 @@ export const useFetch = <T>(url: string | null): UseFetchResult<T> => {
 
     const controller = new AbortController();
 
-    fetch(url, { signal: controller.signal })
-      .then(async (response) => {
-        const payload = (await response.json()) as ApiResponse<T>;
-
-        if (!response.ok || payload.error) {
-          const details = payload.error?.details?.join('. ');
-          throw new Error(details || payload.message || `Request failed (${response.status})`);
-        }
-
-        return payload.data;
-      })
+    fetchJson<T>(url, { signal: controller.signal })
       .then((data) => setResult({ url, data, error: '' }))
       .catch((requestError: Error) => {
         if (requestError.name !== 'AbortError') {
-          setResult({ url, data: null, error: requestError.message });
+          const message = requestError instanceof ApiError
+            ? requestError.message
+            : requestError.message;
+          setResult({ url, data: null, error: message });
         }
       });
 
