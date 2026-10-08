@@ -1,27 +1,36 @@
 import type { Book } from '@/types/books';
 import { Card, CardContent } from '@/components/ui/card';
+import { cn } from '@/lib/utils';
 import './BookCard.css';
 
 interface BookCardProps {
   book: Book;
+  variant?: 'default' | 'compact';
 }
 
-const BookCard = ({ book }: BookCardProps) => {
+const BookCard = ({ book, variant = 'default' }: BookCardProps) => {
   const cover = book.coverUrl;
 
   return (
-    <article>
-      <Card className="h-full py-0 ring-[0.0625rem]">
-        <CardContent className="book-card">
-          {cover ? (
-            <img
-              src={cover}
-              alt={`Cover of ${book.title}`}
-              className="book-cover"
-            />
-          ) : (
-            <div className="book-cover book-cover--placeholder">{book.title}</div>
-          )}
+    <article className="book-card-item">
+      <Card className={cn('h-full py-0 ring-[0.0625rem] transition-all duration-200', 'book-card-wrapper')}>
+        <CardContent className={cn('book-card', variant === 'compact' && 'book-card--compact')}>
+          <div className="book-cover-wrapper">
+            {cover ? (
+              <img
+                src={cover}
+                alt={`Cover of ${book.title}`}
+                className="book-cover"
+                loading="lazy"
+                decoding="async"
+              />
+            ) : (
+              <div className="book-cover book-cover--placeholder" aria-hidden="true">
+                <span className="book-cover-initial">{book.title.charAt(0).toUpperCase()}</span>
+              </div>
+            )}
+            <div className="book-cover-overlay" aria-hidden="true" />
+          </div>
 
           <div className="book-info">
             <h3 className="book-title" title={book.title}>{book.title}</h3>
