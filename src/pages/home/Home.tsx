@@ -6,6 +6,7 @@ import type { Page } from '@/types/api';
 import BookCard from '@/components/book/BookCard';
 import { API_ROUTES } from '@/constants/api.constants';
 import { useFetch } from '@/hooks/useFetch';
+import { fetchJson } from '@/lib/fetch';
 import { SEARCH_CATEGORIES, ALL_FIELDS } from '@/components/search/searchCategories';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -69,8 +70,7 @@ const Home = () => {
   useEffect(() => {
     const fetchFeatured = async () => {
       try {
-        const response = await fetch(buildSearchPath({ query: 'fantasy', field: 'subject', limit: 8 }));
-        const data = await response.json();
+        const data = await fetchJson<Page<Book>>(buildSearchPath({ query: 'fantasy', field: 'subject', limit: 8 }));
         setFeaturedBooks(data.items || []);
       } catch (err) {
         console.error('Failed to fetch featured books:', err);
