@@ -1,0 +1,51 @@
+import React from 'react';
+
+const createMockComponent = (name: string) => {
+  const MockComponent = ({ ...props }: any) => {
+    return React.createElement('svg', { 'data-testid': `icon-${name.toLowerCase()}`, ...props });
+  };
+  MockComponent.displayName = name;
+  return MockComponent;
+};
+
+export const BookOpen = createMockComponent('BookOpen');
+export const LogOut = createMockComponent('LogOut');
+export const LoaderCircle = createMockComponent('LoaderCircle');
+export const AlertCircle = createMockComponent('AlertCircle');
+export const CheckCircle = createMockComponent('CheckCircle');
+export const XCircle = createMockComponent('XCircle');
+export const ChevronDown = createMockComponent('ChevronDown');
+export const ChevronUp = createMockComponent('ChevronUp');
+export const Search = createMockComponent('Search');
+export const Menu = createMockComponent('Menu');
+export const X = createMockComponent('X');
+export const Home = createMockComponent('Home');
+export const User = createMockComponent('User');
+export const Settings = createMockComponent('Settings');
+export const LogIn = createMockComponent('LogIn');
+export const UserPlus = createMockComponent('UserPlus');
+export const Mail = createMockComponent('Mail');
+export const Lock = createMockComponent('Lock');
+export const Eye = createMockComponent('Eye');
+export const EyeOff = createMockComponent('EyeOff');
+export const AlertTriangle = createMockComponent('AlertTriangle');
+export const Info = createMockComponent('Info');
+export const HelpCircle = createMockComponent('HelpCircle');
+export const Star = createMockComponent('Star');
+export const Heart = createMockComponent('Heart');
+export const Share = createMockComponent('Share');
+export const Download = createMockComponent('Download');
+export const Upload = createMockComponent('Upload');
+export const Trash = createMockComponent('Trash');
+export const Edit = createMockComponent('Edit');
+export const Save = createMockComponent('Save');
+export const Plus = createMockComponent('Plus');
+export const Minus = createMockComponent('Minus');
+export const ArrowLeft = createMockComponent('ArrowLeft');
+export const ArrowRight = createMockComponent('ArrowRight');
+export const ArrowUp = createMockComponent('ArrowUp');
+export const ArrowDown = createMockComponent('ArrowDown');
+export const RefreshCw = createMockComponent('RefreshCw');
+export const RotateCcw = createMockComponent('RotateCcw');
+export const Check = createMockComponent('Check');
+export const XMark = createMockComponent('XMark');

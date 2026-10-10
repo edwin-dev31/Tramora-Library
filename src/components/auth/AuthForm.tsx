@@ -67,7 +67,7 @@ const AuthForm = ({ mode }: AuthFormProps) => {
   return (
     <>
       <CardContent className="px-6">
-        <form className="flex flex-col gap-5" onSubmit={handleSubmit} noValidate aria-busy={isSubmitting}>
+        <form data-testid="auth-form" className="flex flex-col gap-5" onSubmit={handleSubmit} noValidate aria-busy={isSubmitting}>
           {error && (
             <Alert variant="destructive" role="alert">
               <AlertDescription>{error}</AlertDescription>
