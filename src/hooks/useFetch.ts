@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
-import { fetchJson, ApiError } from '@/lib/fetch';
+import { fetchJson } from '@/lib/fetch';
 
 export interface UseFetchResult<T> {
   data: T | null;
@@ -8,47 +8,28 @@ export interface UseFetchResult<T> {
   refetch: () => void;
 }
 
-export const useFetch = <T>(url: string | null): UseFetchResult<T> => {
-  const [result, setResult] = useState<{
-    url: string | null;
-    data: T | null;
-    error: string;
-  }>({ url: null, data: null, error: '' });
-
-  const fetchData = useCallback((fetchUrl: string) => {
-    const controller = new AbortController();
-
-    fetchJson<T>(fetchUrl, { signal: controller.signal })
-      .then((data) => setResult({ url: fetchUrl, data, error: '' }))
-      .catch((requestError: Error) => {
-        if (requestError.name !== 'AbortError') {
-          const message = requestError instanceof ApiError
-            ? requestError.message
-            : requestError.message;
-          setResult({ url: fetchUrl, data: null, error: message });
-        }
-      });
-
-    return () => controller.abort();
-  }, []);
-
+export const useFetch = <T>(url: string | null, token?: string | null): UseFetchResult<T> => {
+  const [revision, setRevision] = useState(0);
+  const key = JSON.stringify([url, token, revision]);
+  const [result, setResult] = useState<{ key: string; data: T | null; error: string }>({ key: '', data: null, error: '' });
   useEffect(() => {
     if (!url) return;
-    return fetchData(url);
-  }, [url, fetchData]);
-
-  const isLoading = url !== null && result.url !== url;
-
-  const refetch = useCallback(() => {
-    if (url) {
-      fetchData(url);
-    }
-  }, [url, fetchData]);
-
+    const controller = new AbortController();
+    fetchJson<T>(url, {
+      signal: controller.signal,
+      ...(token ? { headers: { Authorization: `Bearer ${token}` } } : {}),
+    }).then(data => {
+      if (!controller.signal.aborted) setResult({ key, data, error: '' });
+    }).catch((error: Error) => {
+      if (!controller.signal.aborted) setResult({ key, data: null, error: error.message });
+    });
+    return () => controller.abort();
+  }, [url, token, key]);
+  const refetch = useCallback(() => setRevision(value => value + 1), []);
   return {
-    data: result.url === url ? result.data : null,
-    error: result.url === url ? result.error : '',
-    isLoading,
+    data: url && result.key === key ? result.data : null,
+    error: url && result.key === key ? result.error : '',
+    isLoading: url !== null && result.key !== key,
     refetch,
   };
 };
