@@ -1,374 +1,107 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
-import './Home.css';
-
-import type { Book, SearchOptions, SearchField } from '@/types/books';
+import { useEffect, useRef, useState, type FormEvent } from 'react';
+import type { Book, SearchField } from '@/types/books';
 import type { Page } from '@/types/api';
 import BookCard from '@/components/book/BookCard';
-import { API_ROUTES } from '@/constants/api.constants';
-import { useFetch } from '@/hooks/useFetch';
 import { fetchJson } from '@/lib/fetch';
 import { SEARCH_CATEGORIES, ALL_FIELDS } from '@/components/search/searchCategories';
 import { Button } from '@/components/ui/button';
-import { Skeleton } from '@/components/ui/skeleton';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { BookOpen, Sparkles, Search, Loader2, ChevronRight } from 'lucide-react';
+import { Search, Sparkles } from 'lucide-react';
+import './Home.css';
 
-const POPULAR_SEARCHES = [
-  { query: 'fantasy', field: 'subject' as SearchField, label: 'Fantasy' },
-  { query: 'science fiction', field: 'subject' as SearchField, label: 'Sci-Fi' },
-  { query: 'mystery', field: 'subject' as SearchField, label: 'Mystery' },
-  { query: 'romance', field: 'subject' as SearchField, label: 'Romance' },
-  { query: 'history', field: 'subject' as SearchField, label: 'History' },
-  { query: 'biography', field: 'subject' as SearchField, label: 'Biography' },
+const GENRES = [
+  { query: 'fantasy', label: 'Fantasy' }, { query: 'science fiction', label: 'Sci-Fi' },
+  { query: 'mystery', label: 'Mystery' }, { query: 'romance', label: 'Romance' },
+  { query: 'history', label: 'History' }, { query: 'biography', label: 'Biography' },
 ];
+const LIMIT = 12;
 
-const Home = () => {
-  const [searchPath, setSearchPath] = useState<string | null>(null);
-  const [featuredBooks, setFeaturedBooks] = useState<Book[]>([]);
-  const [isLoadingFeatured, setIsLoadingFeatured] = useState(true);
-  const [showSearchResults, setShowSearchResults] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [searchField, setSearchField] = useState<SearchField>('all');
-  const heroSearchRef = useRef<HTMLInputElement>(null);
+export default function Home() {
+  const [query, setQuery] = useState('');
+  const [field, setField] = useState<SearchField>('all');
+  const [search, setSearch] = useState<{ query: string; field: SearchField } | null>(null);
+  const [books, setBooks] = useState<Book[]>([]);
+  const [offset, setOffset] = useState(0);
+  const [hasMore, setHasMore] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const pending = useRef<AbortController | null>(null);
+  const results = useRef<HTMLElement>(null);
+  useEffect(() => () => pending.current?.abort(), []);
 
-  const { data, error, isLoading, refetch } = useFetch<Page<Book>>(searchPath);
-
-  const buildSearchPath = useCallback((options: SearchOptions) => {
-    const params = new URLSearchParams({
-      query: options.query,
-      field: options.field ?? 'all',
-      limit: String(options.limit ?? 20),
-      offset: String(options.offset ?? 0),
-    });
-    return `${API_ROUTES.BOOKS}?${params}`;
-  }, []);
-
-  const handleSearch = useCallback((options: SearchOptions) => {
-    setSearchPath(buildSearchPath(options));
-    setShowSearchResults(true);
-    setSearchQuery(options.query);
-    setSearchField(options.field ?? 'all');
-    heroSearchRef.current?.blur();
-  }, [buildSearchPath]);
-
-  const handleHeroSearch = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    const query = formData.get('query') as string;
-    const field = formData.get('field') as SearchField;
-    if (query?.trim()) {
-      handleSearch({ query: query.trim(), field: field ?? 'all' });
+  const load = async (next: { query: string; field: SearchField }, append = false) => {
+    if (pending.current) return;
+    const controller = new AbortController();
+    pending.current = controller;
+    const nextOffset = append ? offset : 0;
+    setLoading(true);
+    setError('');
+    setSearch(next);
+    setQuery(next.query);
+    setField(next.field);
+    if (!append) { setBooks([]); setHasMore(false); }
+    try {
+      const params = new URLSearchParams({ query: next.query, field: next.field, limit: String(LIMIT), offset: String(nextOffset) });
+      const page = await fetchJson<Page<Book>>(`/books?${params}`, { signal: controller.signal });
+      if (controller.signal.aborted) return;
+      setBooks(previous => Array.from(new Map((append ? [...previous, ...page.items] : page.items).map(book => [book.id, book])).values()));
+      setOffset(nextOffset + page.items.length);
+      setHasMore(page.items.length > 0 && nextOffset + page.items.length < page.pagination.total);
+    } catch (error) {
+      if (!controller.signal.aborted) setError(error instanceof Error ? error.message : 'Unable to search books.');
+    } finally {
+      if (!controller.signal.aborted) {
+        setLoading(false);
+        pending.current = null;
+        if (!append) results.current?.scrollIntoView({ block: 'start', behavior: 'smooth' });
+      }
     }
   };
 
-  useEffect(() => {
-    const fetchFeatured = async () => {
-      try {
-        const data = await fetchJson<Page<Book>>(buildSearchPath({ query: 'fantasy', field: 'subject', limit: 8 }));
-        setFeaturedBooks(data.items || []);
-      } catch (err) {
-        console.error('Failed to fetch featured books:', err);
-      } finally {
-        setIsLoadingFeatured(false);
-      }
-    };
+  const submit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (query.trim()) void load({ query: query.trim(), field });
+  };
 
-    fetchFeatured();
-  }, [buildSearchPath]);
-
-  const books = data?.items ?? [];
-  const totalItems = data?.pagination?.total ?? 0;
-  const hasSearched = searchPath !== null;
-  const hasResults = books.length > 0;
-  const isEmpty = hasSearched && !isLoading && !error && !hasResults;
-
-  const renderBookSkeleton = () => (
-    <Skeleton className="book-card-skeleton">
-      <div className="book-cover-skeleton" />
-      <div className="book-info-skeleton">
-        <div className="skeleton-title" />
-        <div className="skeleton-authors" />
-        <div className="skeleton-meta" />
-        <div className="skeleton-description" />
-        <div className="skeleton-description short" />
-      </div>
-    </Skeleton>
-  );
-
-  const renderCategoryCard = (category: typeof POPULAR_SEARCHES[0]) => (
-    <Button
-      variant="outline"
-      className="category-card h-auto p-4 text-left gap-2 transition-all hover:shadow-md hover:border-primary/50"
-      onClick={() => handleSearch({ query: category.query, field: category.field })}
-    >
-      <BookOpen className="size-5 text-primary shrink-0" aria-hidden="true" />
-      <span className="font-medium truncate">{category.label}</span>
-      <ChevronRight className="size-4 text-muted-foreground shrink-0 ml-auto" aria-hidden="true" />
-    </Button>
-  );
-
-  return (
-    <div className="home-page">
-      <section className="hero" aria-labelledby="hero-title">
-        <div className="hero-content">
-          <header className="hero-header">
-            <div className="hero-badge" aria-hidden="true">
-              <Sparkles className="size-3" />
-              <span>Discover your next favorite book</span>
-            </div>
-            <h1 id="hero-title" className="hero-title">
-              Your personal <span className="text-primary">library</span> awaits
-            </h1>
-            <p className="hero-description">
-              Search millions of books by title, author, subject, or ISBN.
-              Find new reads, revisit classics, and build your reading list.
-            </p>
-          </header>
-
-          <form onSubmit={handleHeroSearch} className="hero-search" role="search">
-            <div className="hero-search-fields">
-              <div className="hero-search-select">
-                <Select
-                  value={searchField}
-                  onValueChange={(value) => setSearchField(value as SearchField)}
-                >
-                  <SelectTrigger aria-label="Search field">
-                    <SelectValue placeholder="All fields" />
-                  </SelectTrigger>
-                  <SelectContent position="popper" sideOffset={5}>
-                    <SelectItem key={ALL_FIELDS.keyword} value={ALL_FIELDS.keyword}>
-                      {ALL_FIELDS.label}
-                    </SelectItem>
-                    {SEARCH_CATEGORIES.map((field) => (
-                      <SelectItem key={field.keyword} value={field.keyword}>
-                        {field.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="hero-search-input-wrapper">
-                <Search className="hero-search-icon" aria-hidden="true" />
-                <input
-                  ref={heroSearchRef}
-                  name="query"
-                  type="search"
-                  placeholder="Search books, authors, subjects..."
-                  autoComplete="off"
-                  className="hero-search-input"
-                  required
-                />
-              </div>
-            </div>
-            <Button
-              type="submit"
-              className="hero-search-btn"
-              disabled={isLoading}
-              aria-label="Search"
-            >
-              {isLoading ? (
-                <>
-                  <Loader2 className="size-4 animate-spin" aria-hidden="true" />
-                  <span>Searching...</span>
-                </>
-              ) : (
-                <>
-                  <Search className="size-4" aria-hidden="true" />
-                  <span>Search</span>
-                </>
-              )}
-            </Button>
-            <input type="hidden" name="field" value={searchField} />
-          </form>
-
-          <div className="hero-hints" aria-label="Popular searches">
-            <span className="hero-hints-label">Popular:</span>
-            <div className="hero-hints-list" role="list">
-              {POPULAR_SEARCHES.slice(0, 4).map((search) => (
-                <button
-                  key={search.label}
-                  type="button"
-                  className="hero-hint-btn"
-                  onClick={() => handleSearch({ query: search.query, field: search.field })}
-                  role="listitem"
-                >
-                  {search.label}
-                </button>
-              ))}
-            </div>
+  return <div className="home-page">
+    <section className="hero" aria-labelledby="hero-title">
+      <div className="hero-content">
+        <div className="hero-kicker"><Sparkles className="size-4" aria-hidden="true" /> A calmer way to discover your next book</div>
+        <h1 id="hero-title" className="hero-title">Your personal <span className="text-primary">library</span> awaits</h1>
+        <p className="hero-description">Search books by title, author, subject, or ISBN and build your reading list.</p>
+        <form onSubmit={submit} className="hero-search" role="search">
+          <div className="hero-search-fields">
+            <label className="sr-only" htmlFor="search-field">Search field</label>
+            <select id="search-field" className="library-select hero-search-select" value={field} onChange={event => setField(event.target.value as SearchField)}>
+              {[ALL_FIELDS, ...SEARCH_CATEGORIES].map(option => <option key={option.keyword} value={option.keyword}>{option.label}</option>)}
+            </select>
+            <label className="sr-only" htmlFor="book-query">Search books</label>
+            <div className="hero-search-input-wrapper"><Search className="hero-search-icon size-4" aria-hidden="true" /><input id="book-query" type="search" className="hero-search-input" placeholder="Search books, authors, subjects..." value={query} onChange={event => setQuery(event.target.value)} required /></div>
           </div>
-        </div>
+          <Button type="submit" className="hero-search-btn" disabled={loading}><Search className="size-4" aria-hidden="true" />{loading ? 'Searching…' : 'Search'}</Button>
+        </form>
+      </div>
+    </section>
+    {!search && <>
+      <section className="categories" aria-labelledby="categories-title">
+        <h2 id="categories-title" className="section-title">Browse by Genre</h2>
+        <div className="categories-grid">{GENRES.map(genre => <Button key={genre.label} variant="outline" disabled={loading} className="category-card" onClick={() => void load({ query: genre.query, field: 'subject' })}>{genre.label}</Button>)}</div>
       </section>
-
-      {!showSearchResults && (
-        <>
-          <section className="categories" aria-labelledby="categories-title">
-            <header className="section-header">
-              <h2 id="categories-title" className="section-title">
-                <BookOpen className="size-5" aria-hidden="true" />
-                Browse by Genre
-              </h2>
-              <p className="section-description">
-                Explore curated categories to find your next read
-              </p>
-            </header>
-            <div className="categories-grid" role="list">
-              {POPULAR_SEARCHES.map((category) => (
-                <article key={category.label} className="category-item" role="listitem">
-                  {renderCategoryCard(category)}
-                </article>
-              ))}
-            </div>
-          </section>
-
-          <section className="featured" aria-labelledby="featured-title">
-            <header className="section-header">
-              <h2 id="featured-title" className="section-title">
-                <Sparkles className="size-5" aria-hidden="true" />
-                Featured Books
-              </h2>
-              <p className="section-description">
-                Hand-picked recommendations for you
-              </p>
-            </header>
-            {isLoadingFeatured ? (
-              <div className="books-grid" aria-busy="true" aria-label="Loading featured books">
-                {Array.from({ length: 8 }).map((_, i) => (
-                  <div key={i}>{renderBookSkeleton()}</div>
-                ))}
-              </div>
-            ) : featuredBooks.length > 0 ? (
-              <div className="books-grid" role="list">
-                {featuredBooks.map((book) => (
-                  <article key={book.id} className="book-item" role="listitem">
-                    <BookCard book={book} />
-                  </article>
-                ))}
-              </div>
-            ) : (
-              <div className="empty-state">
-                <BookOpen className="size-12 text-muted-foreground/50" aria-hidden="true" />
-                <p className="empty-state-text">No featured books available</p>
-              </div>
-            )}
-          </section>
-        </>
-      )}
-
-      {showSearchResults && (
-        <section className="search-results" aria-labelledby="results-title">
-          <header className="results-header">
-            <div className="results-header-content">
-              <Button
-                variant="ghost"
-                size="icon"
-                className="results-back-btn"
-                onClick={() => {
-                  setShowSearchResults(false);
-                  setSearchPath(null);
-                }}
-                aria-label="Back to home"
-              >
-                <Search className="size-4" aria-hidden="true" />
-              </Button>
-              <div>
-                <h2 id="results-title" className="results-title">
-                  {searchQuery ? `Results for "${searchQuery}"` : 'Search Results'}
-                </h2>
-                <p className="results-meta">
-                  {searchField !== 'all' && `in ${SEARCH_CATEGORIES.find(f => f.keyword === searchField)?.label ?? searchField}`}
-                  {totalItems && ` · ${totalItems.toLocaleString()} found`}
-                </p>
-              </div>
-            </div>
-          </header>
-
-          {isLoading && (
-            <div className="books-grid" aria-busy="true" aria-label="Loading search results">
-              {Array.from({ length: 8 }).map((_, i) => (
-                <div key={i}>{renderBookSkeleton()}</div>
-              ))}
-            </div>
-          )}
-
-          {error && (
-            <div className="error-state" role="alert">
-              <p className="error-text">{error}</p>
-              <Button variant="outline" onClick={() => refetch()}>
-                Try again
-              </Button>
-            </div>
-          )}
-
-          {isEmpty && (
-            <div className="empty-state empty-state--search">
-              <Search className="size-12 text-muted-foreground/50" aria-hidden="true" />
-              <h3 className="empty-state-title">No books found</h3>
-              <p className="empty-state-text">
-                We couldn't find any books matching "{searchQuery}".
-                Try a different search term or browse our categories below.
-              </p>
-              <div className="empty-state-actions">
-                <Button variant="outline" onClick={() => { setShowSearchResults(false); setSearchPath(null); }}>
-                  Clear search
-                </Button>
-              </div>
-            </div>
-          )}
-
-          {hasResults && (
-            <>
-              <div className="books-grid" role="list">
-                {books.map((book) => (
-                  <article key={book.id} className="book-item" role="listitem">
-                    <BookCard book={book} />
-                  </article>
-                ))}
-              </div>
-
-              {totalItems > books.length && (
-                <div className="load-more">
-                  <Button
-                    variant="outline"
-                    className="load-more-btn"
-                    onClick={() => {
-                      const nextOffset = books.length;
-                      setSearchPath(buildSearchPath({
-                        query: searchQuery,
-                        field: searchField,
-                        limit: 20,
-                        offset: nextOffset,
-                      }));
-                    }}
-                    disabled={isLoading}
-                  >
-                    {isLoading ? (
-                      <>
-                        <Loader2 className="size-4 animate-spin" aria-hidden="true" />
-                        <span>Loading more...</span>
-                      </>
-                    ) : (
-                      <>
-                        <span>Load more books</span>
-                        <ChevronRight className="size-4" aria-hidden="true" />
-                      </>
-                    )}
-                  </Button>
-                </div>
-              )}
-            </>
-          )}
-        </section>
-      )}
-    </div>
-  );
-};
-
-export default Home;
+      <section className="featured" aria-labelledby="featured-title">
+        <h2 id="featured-title" className="section-title">Featured Books</h2>
+        <p className="section-description">Explore fantasy picks when you are ready.</p>
+        <Button variant="outline" onClick={() => void load({ query: 'fantasy', field: 'subject' })}>Load featured books</Button>
+      </section>
+    </>}
+    {search && <section ref={results} className="search-results scroll-mt-24" aria-labelledby="results-title">
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0"><h2 id="results-title" className="section-title break-words">Results for “{search.query}”</h2><p className="text-sm text-muted-foreground">{search.field === 'all' ? 'All fields' : SEARCH_CATEGORIES.find(option => option.keyword === search.field)?.label}</p></div>
+        <Button variant="outline" disabled={loading} onClick={() => { setSearch(null); setBooks([]); setQuery(''); setError(''); setHasMore(false); }}>Clear</Button>
+      </div>
+      {loading && <p role="status">Loading books…</p>}
+      {error && <div className="error-state" role="alert"><p>{error}</p><p>Your saved loans, wishlist and reservations are still available from the menu.</p></div>}
+      {!loading && !error && !books.length && <p className="empty-state">No books found. Try a different search.</p>}
+      <div className="books-grid" role="list">{books.map(book => <div key={book.id} role="listitem"><BookCard book={book} /></div>)}</div>
+      {hasMore && <Button variant="outline" className="w-full" disabled={loading} onClick={() => void load(search, true)}>{loading ? 'Loading more…' : 'Load more books'}</Button>}
+    </section>}
+  </div>;
+}

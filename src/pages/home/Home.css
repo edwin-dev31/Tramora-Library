@@ -6,18 +6,27 @@
 }
 
 .hero {
-  padding: 2rem 1rem;
+  position: relative;
+  padding: clamp(2rem, 6vw, 4rem) 1rem;
   text-align: center;
-  background: linear-gradient(180deg, var(--muted) 0%, transparent 100%);
-  border-bottom: 0.0625rem solid var(--border);
+  background: linear-gradient(135deg, color-mix(in oklab, var(--secondary) 80%, white) 0%, color-mix(in oklab, var(--muted) 70%, transparent) 56%, transparent 100%);
+  border: 1px solid color-mix(in oklab, var(--border) 80%, transparent);
+  border-radius: 1.5rem;
+  box-shadow: 0 1.5rem 3rem -2.25rem color-mix(in oklab, var(--primary) 32%, transparent);
   margin: calc(-1 * var(--header-padding-y, 2rem)) calc(-1 * var(--header-padding-x, 1rem)) 0;
 }
 
 @media (min-width: 48rem) {
   .hero {
-    padding: 4rem 2rem;
-    border-radius: 0 0 var(--radius-xl) var(--radius-xl);
+    padding-left: 2rem;
+    padding-right: 2rem;
   }
+}
+
+.hero-kicker {
+  display: inline-flex; align-items: center; gap: 0.45rem; margin-bottom: 1.1rem; padding: 0.4rem 0.75rem;
+  border: 1px solid color-mix(in oklab, var(--primary) 25%, transparent); border-radius: 999px;
+  color: var(--primary); background: color-mix(in oklab, var(--card) 70%, transparent); font-size: 0.75rem; font-weight: 650; letter-spacing: 0.02em;
 }
 
 .hero-content {
@@ -54,7 +63,7 @@
   line-height: 1.6;
   color: var(--muted-foreground);
   margin: 0 0 2rem;
-  max-width: 36rem;
+  max-width: 44rem;
   margin-left: auto;
   margin-right: auto;
   animation: fadeInUp 0.5s ease-out 0.2s both;
@@ -121,6 +130,9 @@
   padding-left: 2.75rem;
   height: 3rem;
   font-size: 1rem;
+  width: 100%;
+  border-color: color-mix(in oklab, var(--input) 85%, var(--primary));
+  box-shadow: 0 0.5rem 1.25rem -1rem color-mix(in oklab, var(--primary) 30%, transparent);
 }
 
 @media (min-width: 48rem) {
@@ -136,6 +148,8 @@
   font-weight: 600;
   padding: 0 1.5rem;
   white-space: nowrap;
+  gap: 0.5rem;
+  box-shadow: 0 0.6rem 1.2rem -0.8rem color-mix(in oklab, var(--primary) 70%, transparent);
 }
 
 @media (min-width: 48rem) {
@@ -214,10 +228,35 @@
   padding: 0 0.5rem;
 }
 
+.categories,
+.featured,
+.search-results {
+  width: 100%;
+}
+
+.categories .section-title,
+.featured .section-title {
+  margin-bottom: 0.9rem;
+}
+
 .categories-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 0.75rem;
+}
+
+.categories-grid .category-card {
+  min-height: 3.25rem;
+  justify-content: center;
+  border-color: color-mix(in oklab, var(--border) 85%, var(--primary));
+  background: color-mix(in oklab, var(--card) 78%, transparent);
+  transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+}
+
+.categories-grid .category-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--primary);
+  background: var(--secondary);
 }
 
 @media (min-width: 40rem) {
@@ -240,8 +279,17 @@
 }
 
 .featured {
-  padding: 0 0.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 1.25rem 1.25rem 1.35rem;
+  border: 1px solid color-mix(in oklab, var(--border) 85%, transparent);
+  border-radius: 1rem;
+  background: color-mix(in oklab, var(--card) 82%, transparent);
 }
+
+.featured .section-description { margin-left: 0; }
 
 .books-grid {
   display: grid;
@@ -296,7 +344,26 @@
 
 .search-results {
   padding: 0 0.5rem;
+  min-width: 0;
   animation: fadeIn 0.3s ease-out;
+}
+
+.search-results > .flex {
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.books-grid .book-card {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.books-grid .book-cover-wrapper {
+  align-self: center;
+}
+
+.books-grid .book-info {
+  min-height: 9.25rem;
 }
 
 .results-header {
@@ -480,4 +547,11 @@
   .categories-grid {
     grid-template-columns: 1fr 1fr;
   }
+}
+
+.error-hint {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--muted-foreground);
+  text-align: center;
 }

@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-label="Icono de biblioteca">
+ <defs><linearGradient id="cover" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#0877a6"/><stop offset="1" stop-color="#00364e"/></linearGradient><linearGradient id="page" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#c9f0ff"/><stop offset="1" stop-color="#42c3f3"/></linearGradient></defs>
+ <path d="M128 91C107 58 78 44 43 34v19c39 12 66 30 85 53 19-23 46-41 85-53V34c-35 10-64 24-85 57Z" fill="#b4eaff"/>
+ <path d="M128 103C100 71 69 60 31 52v19c40 11 70 27 97 48 27-21 57-37 97-48V52c-38 8-69 19-97 51Z" fill="#5bcdf7"/>
+ <path d="M128 116C98 91 64 77 23 72v18c47 9 79 24 105 43 26-19 58-34 105-43V72c-41 5-75 19-105 44Z" fill="url(#page)"/>
+ <path d="M128 132 16 91a7 7 0 0 0-9 7v103a9 9 0 0 0 6 8l105 39c5 2 10-1 10-7Z" fill="url(#cover)"/>
+ <path d="M128 132 240 91a7 7 0 0 1 9 7v103a9 9 0 0 1-6 8l-105 39c-5 2-10-1-10-7Z" fill="#004465"/>
+ <path d="M24 114 112 145v40L24 156Zm0 53 88 30v33L24 197ZM232 114l-88 31v40l88-29Zm0 53-88 30v33l88-33Z" fill="#002638"/>
+ <g fill="#55c9f7"><path d="m32 126 10 3v35l-10-3Zm39 13 10 4v31l-10-3Zm-39 40 10 3v28l-10-4Zm39 13 10 4v27l-10-4ZM174 134l10-4v34l-10 4Zm39-13 10-4v35l-10 4Zm-39 73 10-4v28l-10 4Zm39-14 10-4v29l-10 4Z"/></g>
+ <g fill="#0e91ca"><path d="m48 131 12 4v34l-12-4Zm40 15 12 4v30l-12-4Zm-40 54 12 4v26l-12-4Zm40 14 12 4v25l-12-4ZM156 141l12-4v33l-12 4Zm40-14 12-4v34l-12 4Zm-40 75 12-4v26l-12 4Zm40-14 12-4v27l-12 4Z"/></g>
+ <path d="M108 242v-61a20 20 0 0 1 40 0v61l-20-8Z" fill="#e1f7ff"/>
+ <path d="M113 241v-59a15 15 0 0 1 30 0v59l-15-7Z" fill="#4bc7f4"/>
+ <path d="m113 241 15-12 35 25h-40Z" fill="#19adeb"/>
+</svg>
