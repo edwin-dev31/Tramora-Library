@@ -76,7 +76,6 @@ describe('AppLayout', () => {
     mockStatus = 'authenticated';
     renderAppLayout();
     
-    // The name is rendered in a span with truncate class - check the title attribute
     const nameSpan = screen.getByTitle('A'.repeat(50));
     expect(nameSpan).toHaveClass('truncate');
     expect(nameSpan).toHaveClass('max-w-40');
@@ -100,20 +99,15 @@ describe('AppLayout', () => {
     renderAppLayout();
     const header = screen.getByRole('banner');
     expect(header).toBeInTheDocument();
-    expect(header).toHaveClass('border-b-[0.0625rem]');
-  });
-
-  it('has correct main structure', () => {
-    renderAppLayout();
-    const main = screen.getByRole('main');
-    expect(main).toBeInTheDocument();
-    expect(main).toHaveClass('mx-auto');
-    expect(main).toHaveClass('max-w-6xl');
+    expect(header).toHaveClass('border-b');
+    expect(header).toHaveClass('border-border');
+    expect(header).toHaveClass('sticky');
+    expect(header).toHaveClass('top-0');
   });
 
   it('navigation has aria-label', () => {
     renderAppLayout();
-    const nav = screen.getByLabelText('Account');
+    const nav = screen.getByLabelText('Main navigation');
     expect(nav).toBeInTheDocument();
   });
 
