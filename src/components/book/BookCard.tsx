@@ -1,4 +1,5 @@
 import type { Book } from '@/types/books';
+import { Link } from 'react-router';
 import { Card, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import './BookCard.css';
@@ -43,6 +44,7 @@ const BookCard = ({ book, variant = 'default' }: BookCardProps) => {
             {book.description && (
               <p className="book-description">{book.description}</p>
             )}
+            <Link to={`/books/${encodeURIComponent(book.id)}`} className="library-text-link">View details</Link>
           </div>
         </CardContent>
       </Card>
