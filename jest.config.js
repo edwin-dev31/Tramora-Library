@@ -15,7 +15,7 @@ export default {
       tsconfig: 'tsconfig.test.json',
     }],
   },
-  testMatch: ['<rootDir>/src/**/*.test.{ts,tsx}'],
+  testMatch: ['<rootDir>/tests/**/*.test.{ts,tsx}'],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
   transformIgnorePatterns: [
     'node_modules/(?!(react-router|lucide-react|@testing-library|identity-obj-proxy)/)',

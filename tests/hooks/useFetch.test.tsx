@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom';
 import { renderHook, act, waitFor } from '@testing-library/react';
-import { useFetch } from './useFetch';
+import { useFetch } from '@/hooks/useFetch';
 import { fetchJson, ApiError } from '@/lib/fetch';
 
 jest.mock('@/lib/fetch', () => ({

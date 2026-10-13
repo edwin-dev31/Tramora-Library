@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import AuthForm from './AuthForm';
+import AuthForm from '@/components/auth/AuthForm';
 import { AuthProvider } from '@/context/auth/AuthProvider';
 import { MemoryRouter } from 'react-router';
 

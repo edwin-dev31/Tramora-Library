@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom';
 import { render, screen, fireEvent } from '@testing-library/react';
-import AppLayout from './AppLayout';
+import AppLayout from '@/components/layout/AppLayout';
 import { MemoryRouter } from 'react-router';
 import { AuthProvider } from '@/context/auth/AuthProvider';
 

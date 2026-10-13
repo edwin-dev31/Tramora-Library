@@ -17,6 +17,7 @@ export const XCircle = createMockComponent('XCircle');
 export const ChevronDown = createMockComponent('ChevronDown');
 export const ChevronUp = createMockComponent('ChevronUp');
 export const Search = createMockComponent('Search');
+export const Sparkles = createMockComponent('Sparkles');
 export const Menu = createMockComponent('Menu');
 export const X = createMockComponent('X');
 export const Moon = createMockComponent('Moon');

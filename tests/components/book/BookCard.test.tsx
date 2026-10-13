@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
-import BookCard from './BookCard';
+import BookCard from '@/components/book/BookCard';
 import type { Book } from '@/types/books';
 
 const mockBook: Book = {

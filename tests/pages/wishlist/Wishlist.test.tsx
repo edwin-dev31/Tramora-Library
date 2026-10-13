@@ -1,5 +1,5 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
-import Wishlist from './Wishlist';
+import Wishlist from '@/pages/wishlist/Wishlist';
 import { apiClient } from '@/lib/fetch';
 
 jest.mock('@/lib/fetch', () => ({ apiClient: { authorized: jest.fn() } }));

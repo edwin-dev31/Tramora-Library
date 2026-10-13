@@ -1,5 +1,5 @@
 import { act, renderHook, waitFor } from '@testing-library/react';
-import { useLibraryList } from './useLibraryList';
+import { useLibraryList } from '@/hooks/useLibraryList';
 import { apiClient } from '@/lib/fetch';
 
 jest.mock('@/lib/fetch', () => ({ apiClient: { authorized: jest.fn() } }));
