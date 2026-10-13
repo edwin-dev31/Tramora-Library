@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useReducer, useRef } from 'react';
 import type { ReactNode } from 'react';
 import { AuthContext } from './AuthContext';
 import { clearAuthSession, readAuthSession, saveAuthSession } from '@/lib/auth-storage';
+import { subscribeToUnauthorized } from '@/lib/fetch';
 import { authReducer, initialAuthState } from '@/reducers/auth.reducer';
 import { authService, ApiError } from '@/services/auth.service';
 import type { AuthContextValue, AuthToken, LoginCredentials, RegisterInput } from '@/types/auth';
@@ -118,6 +119,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     authenticate((signal) => authService.register(input, signal)), [authenticate]);
 
   const clearError = useCallback(() => dispatch({ type: 'CLEAR_ERROR' }), []);
+
+  useEffect(() => {
+    if (state.status !== 'authenticated') return;
+    return subscribeToUnauthorized(logout);
+  }, [state.status, logout]);
 
   useEffect(() => {
     if (state.expiresAt === null) return;

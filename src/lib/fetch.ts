@@ -1,6 +1,25 @@
 import { env } from '@/config/env';
+import type { ApiResponse } from '@/types/api';
 
 const API_BASE = env.API_URL.replace(/\/+$/, '');
+const unauthorizedListeners = new Set<() => void>();
+
+export const subscribeToUnauthorized = (listener: () => void) => {
+  unauthorizedListeners.add(listener);
+  return () => {
+    unauthorizedListeners.delete(listener);
+  };
+};
+
+const notifyUnauthorized = () => {
+  unauthorizedListeners.forEach(listener => {
+    try {
+      listener();
+    } catch {
+      // A consumer error must not replace the original API error.
+    }
+  });
+};
 
 export class ApiError extends Error {
   public readonly status: number;
@@ -17,9 +36,26 @@ export class ApiError extends Error {
 }
 
 async function parseResponse<T>(response: Response): Promise<T> {
-  let payload: unknown;
+  let responseText: string;
   try {
-    payload = await response.json();
+    responseText = await response.text();
+  } catch {
+    throw new ApiError(
+      response.ok
+        ? 'The server returned an invalid response. Please try again.'
+        : fallbackMessage(response.status),
+      response.status
+    );
+  }
+
+  if (!responseText) {
+    if (response.ok) return undefined as T;
+    throw new ApiError(fallbackMessage(response.status), response.status);
+  }
+
+  let payload: ApiResponse<T>;
+  try {
+    payload = JSON.parse(responseText) as ApiResponse<T>;
   } catch {
     throw new ApiError(
       response.ok
@@ -30,24 +66,22 @@ async function parseResponse<T>(response: Response): Promise<T> {
   }
 
   if (!response.ok) {
-    const error = payload as { error?: { code?: string; details?: string[] }; message?: string };
     throw new ApiError(
-      error?.message || fallbackMessage(response.status),
+      payload.message || fallbackMessage(response.status),
       response.status,
-      error?.error?.code,
-      error?.error?.details
+      payload.error?.code,
+      payload.error?.details
     );
   }
 
-  const successPayload = payload as { data: T; error: null; message: string };
-  if (successPayload.error !== null || successPayload.data === undefined) {
+  if (payload.error !== null || payload.data === undefined) {
     throw new ApiError(
       'The server returned an invalid response. Please try again.',
       response.status
     );
   }
 
-  return successPayload.data;
+  return payload.data;
 }
 
 function fallbackMessage(status: number): string {
@@ -73,38 +107,41 @@ export async function fetchJson<T>(
     throw new ApiError('Unable to connect to the server. Please try again.', 0, 'NETWORK_ERROR', undefined, { cause: error });
   }
 
+  const headers = new Headers(options.headers);
+  if (response.status === 401 && headers.has('Authorization')) {
+    notifyUnauthorized();
+  }
+
   return parseResponse<T>(response);
 }
+
+const withJsonBody = (body: unknown, options: RequestInit): RequestInit => {
+  const headers = new Headers(options.headers);
+  if (!headers.has('Content-Type')) headers.set('Content-Type', 'application/json');
+
+  return {
+    ...options,
+    headers,
+    body: JSON.stringify(body),
+  };
+};
 
 export const apiClient = {
   get: <T>(path: string, options: RequestInit = {}) =>
     fetchJson<T>(path, { method: 'GET', ...options }),
 
   post: <T>(path: string, body: unknown, options: RequestInit = {}) =>
-    fetchJson<T>(path, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
-      ...options,
-    }),
+    fetchJson<T>(path, { ...withJsonBody(body, options), method: 'POST' }),
 
   put: <T>(path: string, body: unknown, options: RequestInit = {}) =>
-    fetchJson<T>(path, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
-      ...options,
-    }),
+    fetchJson<T>(path, { ...withJsonBody(body, options), method: 'PUT' }),
 
   delete: <T>(path: string, options: RequestInit = {}) =>
     fetchJson<T>(path, { method: 'DELETE', ...options }),
 
-  authorized: <T>(path: string, token: string, options: RequestInit = {}) =>
-    fetchJson<T>(path, {
-      ...options,
-      headers: {
-        ...options.headers,
-        Authorization: `Bearer ${token}`,
-      },
-    }),
+  authorized: <T>(path: string, token: string, options: RequestInit = {}) => {
+    const headers = new Headers(options.headers);
+    headers.set('Authorization', `Bearer ${token}`);
+    return fetchJson<T>(path, { ...options, headers });
+  },
 };

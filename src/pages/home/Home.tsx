@@ -1,8 +1,7 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import type { Book, SearchField } from '@/types/books';
-import type { Page } from '@/types/api';
 import BookCard from '@/components/book/BookCard';
-import { fetchJson } from '@/lib/fetch';
+import { booksService } from '@/services/books.service';
 import { SEARCH_CATEGORIES, ALL_FIELDS } from '@/components/search/searchCategories';
 import { Button } from '@/components/ui/button';
 import { Search, Sparkles } from 'lucide-react';
@@ -40,8 +39,12 @@ export default function Home() {
     setField(next.field);
     if (!append) { setBooks([]); setHasMore(false); }
     try {
-      const params = new URLSearchParams({ query: next.query, field: next.field, limit: String(LIMIT), offset: String(nextOffset) });
-      const page = await fetchJson<Page<Book>>(`/books?${params}`, { signal: controller.signal });
+      const page = await booksService.search({
+        query: next.query,
+        field: next.field,
+        limit: LIMIT,
+        offset: nextOffset,
+      }, controller.signal);
       if (controller.signal.aborted) return;
       setBooks(previous => Array.from(new Map((append ? [...previous, ...page.items] : page.items).map(book => [book.id, book])).values()));
       setOffset(nextOffset + page.items.length);

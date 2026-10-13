@@ -1,4 +1,4 @@
-export interface ApiError {
+export interface ApiErrorPayload {
   code: string;
   details?: string[];
 }
@@ -9,7 +9,7 @@ export type ApiResponse<T> = {
   message: string;
 } | {
   data: null;
-  error: ApiError;
+  error: ApiErrorPayload;
   message: string;
 };
 
