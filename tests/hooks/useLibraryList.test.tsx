@@ -1,7 +1,7 @@
 import { act, renderHook, waitFor } from '@testing-library/react';
-import { useLibraryList } from '@/hooks/useLibraryList';
+import { useLibraryList } from '@/shared/hooks/useLibraryList';
 
-jest.mock('@/context/auth/useAuth', () => ({ useAuth: () => ({ accessToken: 'test-session' }) }));
+jest.mock('@/features/auth/context/useAuth', () => ({ useAuth: () => ({ accessToken: 'test-session' }) }));
 
 it('passes pagination to the service loader and appends three pages without replacing previous items', async () => {
   const loader = jest.fn(async (_accessToken: string, request: { offset: number }) =>

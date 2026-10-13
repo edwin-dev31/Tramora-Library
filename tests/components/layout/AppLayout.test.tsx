@@ -1,15 +1,15 @@
 import '@testing-library/jest-dom';
 import { render, screen, fireEvent } from '@testing-library/react';
-import AppLayout from '@/components/layout/AppLayout';
+import AppLayout from '@/shared/components/layout/AppLayout';
 import { MemoryRouter } from 'react-router';
-import { AuthProvider } from '@/context/auth/AuthProvider';
+import { AuthProvider } from '@/features/auth/context/AuthProvider';
 
 const mockLogout = jest.fn();
 
 let mockUser: { id: string; name: string; email: string } | null = null;
 let mockStatus: 'unauthenticated' | 'loading' | 'authenticated' = 'unauthenticated';
 
-jest.mock('@/context/auth/useAuth', () => ({
+jest.mock('@/features/auth/context/useAuth', () => ({
   useAuth: () => ({
     get user() {
       return mockUser;

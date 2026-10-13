@@ -1,14 +1,14 @@
 import { Route, Routes } from 'react-router';
-import AppLayout from '@/components/layout/AppLayout';
-import GuestRoute from '@/components/auth/GuestRoute';
-import ProtectedRoute from '@/components/auth/ProtectedRoute';
-import BookDetail from '@/pages/BookDetail';
-import { Home } from '@/pages/home';
-import { Login, Register } from '@/pages/auth';
-import { LoansPage, LoanDetail, ReadingList } from '@/pages/loans';
-import { WishlistPage } from '@/pages/wishlist';
-import { ReservationsPage } from '@/pages/reservations';
-import { NotFound } from '@/pages/errors';
+import AppLayout from '@/shared/components/layout/AppLayout';
+import GuestRoute from '@/features/auth/components/GuestRoute';
+import ProtectedRoute from '@/features/auth/components/ProtectedRoute';
+import BookDetail from '@/features/books/pages/BookDetail';
+import { Home } from '@/features/books/pages/home';
+import { Login, Register } from '@/features/auth/pages';
+import { LoansPage, LoanDetail, ReadingList } from '@/features/loans/pages';
+import { WishlistPage } from '@/features/wishlist/pages';
+import { ReservationsPage } from '@/features/reservations/pages';
+import { NotFound } from '@/features/errors/pages';
 
 const App = () => {
   return (

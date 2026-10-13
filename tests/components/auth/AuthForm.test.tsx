@@ -1,8 +1,8 @@
 import '@testing-library/jest-dom';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import AuthForm from '@/components/auth/AuthForm';
-import { AuthProvider } from '@/context/auth/AuthProvider';
+import AuthForm from '@/features/auth/components/AuthForm';
+import { AuthProvider } from '@/features/auth/context/AuthProvider';
 import { MemoryRouter } from 'react-router';
 
 const mockLogin = jest.fn();
@@ -36,7 +36,7 @@ const createMockAuth = (_overrides: Partial<{
   };
 };
 
-jest.mock('@/context/auth/useAuth', () => ({
+jest.mock('@/features/auth/context/useAuth', () => ({
   useAuth: () => createMockAuth(),
 }));
 

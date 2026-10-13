@@ -1,10 +1,10 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter } from 'react-router'
-import './index.css'
-import '@/config/env'
+import '@/shared/styles/global.css'
+import '@/shared/config/env'
 import App from '@/App.tsx'
-import { AuthProvider } from '@/context/auth/AuthProvider'
+import { AuthProvider } from '@/features/auth/context/AuthProvider'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

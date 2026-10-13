@@ -1,9 +1,9 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
-import Wishlist from '@/pages/wishlist/Wishlist';
-import { apiClient } from '@/lib/fetch';
+import Wishlist from '@/features/wishlist/pages/Wishlist';
+import { apiClient } from '@/shared/api/http';
 
-jest.mock('@/lib/fetch', () => ({ apiClient: { authorized: jest.fn() } }));
-jest.mock('@/context/auth/useAuth', () => ({ useAuth: () => ({ accessToken: 'session' }) }));
+jest.mock('@/shared/api/http', () => ({ apiClient: { authorized: jest.fn() } }));
+jest.mock('@/features/auth/context/useAuth', () => ({ useAuth: () => ({ accessToken: 'session' }) }));
 const request = jest.mocked(apiClient.authorized);
 
 it('renders backend book.author and reading_status and submits status changes to the authenticated API', async () => {

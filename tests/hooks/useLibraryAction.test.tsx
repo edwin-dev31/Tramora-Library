@@ -1,7 +1,7 @@
 import { act, renderHook, waitFor } from '@testing-library/react';
-import { useLibraryAction } from '@/hooks/useLibraryAction';
+import { useLibraryAction } from '@/shared/hooks/useLibraryAction';
 
-jest.mock('@/context/auth/useAuth', () => ({
+jest.mock('@/features/auth/context/useAuth', () => ({
   useAuth: () => ({ accessToken: 'test-session' }),
 }));
 

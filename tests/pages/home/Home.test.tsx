@@ -1,8 +1,8 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
-import Home from '@/pages/home/Home';
-import { booksService } from '@/services/books.service';
+import Home from '@/features/books/pages/home/Home';
+import { booksService } from '@/features/books/api/books.service';
 
-jest.mock('@/services/books.service', () => ({ booksService: { search: jest.fn() } }));
+jest.mock('@/features/books/api/books.service', () => ({ booksService: { search: jest.fn() } }));
 const request = jest.mocked(booksService.search);
 
 beforeEach(() => request.mockReset());

@@ -1,8 +1,8 @@
 /** @jest-environment node */
 
-import { apiClient, fetchJson, subscribeToUnauthorized } from '@/lib/fetch';
+import { apiClient, fetchJson, subscribeToUnauthorized } from '@/shared/api/http';
 
-jest.mock('@/config/env', () => ({
+jest.mock('@/shared/config/env', () => ({
   env: { API_URL: 'https://library.test/' },
 }));
 

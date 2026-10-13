@@ -1,7 +1,7 @@
-import { apiClient } from '@/lib/fetch';
-import { booksService } from '@/services/books.service';
+import { apiClient } from '@/shared/api/http';
+import { booksService } from '@/features/books/api/books.service';
 
-jest.mock('@/lib/fetch', () => ({
+jest.mock('@/shared/api/http', () => ({
   apiClient: { get: jest.fn(), authorized: jest.fn() },
 }));
 

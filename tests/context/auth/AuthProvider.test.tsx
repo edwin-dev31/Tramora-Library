@@ -1,10 +1,10 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { AuthProvider } from '@/context/auth/AuthProvider';
-import { useAuth } from '@/context/auth/useAuth';
-import { saveAuthSession } from '@/lib/auth-storage';
-import { authService } from '@/services/auth.service';
+import { AuthProvider } from '@/features/auth/context/AuthProvider';
+import { useAuth } from '@/features/auth/context/useAuth';
+import { saveAuthSession } from '@/features/auth/model/auth-storage';
+import { authService } from '@/features/auth/api/auth.service';
 
-jest.mock('@/services/auth.service', () => ({
+jest.mock('@/features/auth/api/auth.service', () => ({
   ApiError: class ApiError extends Error {},
   authService: {
     login: jest.fn(),

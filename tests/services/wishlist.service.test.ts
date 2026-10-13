@@ -1,7 +1,7 @@
-import { apiClient } from '@/lib/fetch';
-import { wishlistService } from '@/services/wishlist.service';
+import { apiClient } from '@/shared/api/http';
+import { wishlistService } from '@/features/wishlist/api/wishlist.service';
 
-jest.mock('@/lib/fetch', () => ({
+jest.mock('@/shared/api/http', () => ({
   apiClient: { authorized: jest.fn() },
 }));
 
