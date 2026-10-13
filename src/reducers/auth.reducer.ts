@@ -9,7 +9,7 @@ export const initialAuthState: AuthState = {
   error: null,
 };
 
-type AuthAction =
+export type AuthAction =
   | { type: 'SUBMIT' }
   | { type: 'AUTHENTICATED'; user: AuthUser; session: AuthSession }
   | { type: 'ANONYMOUS'; error?: string }
