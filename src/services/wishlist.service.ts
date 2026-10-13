@@ -1,4 +1,4 @@
-import { API_ROUTES } from '@/constants/api.constants';
+import { API_ENDPOINTS } from '@/constants/api.constants';
 import { apiClient } from '@/lib/fetch';
 import type { ListRequest } from '@/types/api';
 import type { ReadingEntry, ReadingStatus } from '@/types/library';
@@ -11,14 +11,14 @@ export const wishlistService = {
     });
 
     return apiClient.authorized<ReadingEntry[]>(
-      `${API_ROUTES.WISHLIST}?${params}`,
+      `${API_ENDPOINTS.wishlist.list}?${params}`,
       accessToken,
       { signal: request.signal },
     );
   },
 
   add: (bookId: string, accessToken: string, signal?: AbortSignal) =>
-    apiClient.authorized<void>(API_ROUTES.WISHLIST, accessToken, {
+    apiClient.authorized<void>(API_ENDPOINTS.wishlist.list, accessToken, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ bookId }),
@@ -32,7 +32,7 @@ export const wishlistService = {
     signal?: AbortSignal,
   ) =>
     apiClient.authorized<void>(
-      `${API_ROUTES.WISHLIST}/${encodeURIComponent(entryId)}`,
+      API_ENDPOINTS.wishlist.entry(entryId),
       accessToken,
       {
         method: 'PUT',
@@ -44,7 +44,7 @@ export const wishlistService = {
 
   remove: (entryId: string, accessToken: string, signal?: AbortSignal) =>
     apiClient.authorized<void>(
-      `${API_ROUTES.WISHLIST}/${encodeURIComponent(entryId)}`,
+      API_ENDPOINTS.wishlist.entry(entryId),
       accessToken,
       { method: 'DELETE', signal },
     ),

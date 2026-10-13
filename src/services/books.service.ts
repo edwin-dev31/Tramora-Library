@@ -1,4 +1,4 @@
-import { API_ROUTES } from '@/constants/api.constants';
+import { API_ENDPOINTS } from '@/constants/api.constants';
 import { apiClient } from '@/lib/fetch';
 import type { Page } from '@/types/api';
 import type { Book, BookDetails, SearchOptions } from '@/types/books';
@@ -12,7 +12,7 @@ export const booksService = {
       offset: String(options.offset ?? 0),
     });
 
-    return apiClient.get<Page<Book>>(`${API_ROUTES.BOOKS}?${params}`, { signal });
+    return apiClient.get<Page<Book>>(`${API_ENDPOINTS.books.list}?${params}`, { signal });
   },
 
   getById: (
@@ -21,7 +21,7 @@ export const booksService = {
     signal?: AbortSignal,
   ): Promise<BookDetails> =>
     apiClient.authorized<BookDetails>(
-      `${API_ROUTES.BOOKS}/${encodeURIComponent(bookId)}`,
+      API_ENDPOINTS.books.detail(bookId),
       accessToken,
       { signal },
     ),

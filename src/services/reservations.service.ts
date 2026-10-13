@@ -1,4 +1,4 @@
-import { API_ROUTES } from '@/constants/api.constants';
+import { API_ENDPOINTS } from '@/constants/api.constants';
 import { apiClient } from '@/lib/fetch';
 import type { ListRequest } from '@/types/api';
 import type { Reservation } from '@/types/library';
@@ -18,13 +18,13 @@ const list = (path: string, accessToken: string, request: ListRequest) => {
 
 export const reservationsService = {
   getActive: (accessToken: string, request: ListRequest): Promise<Reservation[]> =>
-    list(`${API_ROUTES.RESERVATIONS}/active`, accessToken, request),
+    list(API_ENDPOINTS.reservations.active, accessToken, request),
 
   getHistory: (accessToken: string, request: ListRequest): Promise<Reservation[]> =>
-    list(`${API_ROUTES.RESERVATIONS}/history`, accessToken, request),
+    list(API_ENDPOINTS.reservations.history, accessToken, request),
 
   create: (bookId: string, accessToken: string, signal?: AbortSignal) =>
-    apiClient.authorized<void>(API_ROUTES.RESERVATIONS, accessToken, {
+    apiClient.authorized<void>(API_ENDPOINTS.reservations.list, accessToken, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ bookId }),
@@ -38,7 +38,7 @@ export const reservationsService = {
     signal?: AbortSignal,
   ) =>
     apiClient.authorized<void>(
-      `${API_ROUTES.RESERVATIONS}/${encodeURIComponent(reservationId)}/notifications`,
+      API_ENDPOINTS.reservations.notifications(reservationId),
       accessToken,
       {
         method: 'PUT',
@@ -50,7 +50,7 @@ export const reservationsService = {
 
   cancel: (reservationId: string, accessToken: string, signal?: AbortSignal) =>
     apiClient.authorized<void>(
-      `${API_ROUTES.RESERVATIONS}/${encodeURIComponent(reservationId)}`,
+      API_ENDPOINTS.reservations.detail(reservationId),
       accessToken,
       { method: 'DELETE', signal },
     ),
