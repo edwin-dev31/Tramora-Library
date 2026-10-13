@@ -1,19 +1,21 @@
 import { useState } from 'react';
 import { Link, useParams } from 'react-router';
 import { Button } from '@/components/ui/button';
-import { useFetch } from '@/hooks/useFetch';
+import { useAsyncResource } from '@/hooks/useAsyncResource';
 import { useLibraryAction } from '@/hooks/useLibraryAction';
 import { useAuth } from '@/context/auth/useAuth';
-import type { Book } from '@/types/books';
-
-interface BookDetailData extends Book {
-  availability: { status: string; canBorrow: boolean; canReserve: boolean; borrowedByMe: boolean; reservedByMe: boolean };
-}
+import { booksService } from '@/services/books.service';
+import { loansService } from '@/services/loans.service';
+import type { BookDetails } from '@/types/books';
 
 export default function BookDetail() {
   const { id } = useParams<{ id: string }>();
   const { accessToken } = useAuth();
-  const { data: book, error, isLoading, refetch } = useFetch<BookDetailData>(id ? `/books/${encodeURIComponent(id)}` : null, accessToken);
+  const requestKey = id && accessToken ? `book:${id}:${accessToken}` : null;
+  const { data: book, error, isLoading, refetch } = useAsyncResource<BookDetails>(
+    requestKey,
+    signal => booksService.getById(id!, accessToken!, signal),
+  );
   const action = useLibraryAction();
   const [message, setMessage] = useState('');
   const [saved, setSaved] = useState(false);
@@ -23,6 +25,13 @@ export default function BookDetail() {
       setMessage(success);
       if (path === '/wishlist') setSaved(true);
       else refetch();
+    }
+  };
+  const borrow = async () => {
+    setMessage('');
+    if (id && await action.runOperation((token, signal) => loansService.borrow(id, token, signal))) {
+      setMessage('Book borrowed. You can manage it in Active Loans.');
+      refetch();
     }
   };
   return <div className="loan-detail-page">
@@ -38,7 +47,7 @@ export default function BookDetail() {
       </div>
       <p className="text-sm">{book.availability.borrowedByMe ? 'You have borrowed this book.' : book.availability.reservedByMe ? 'You have reserved this book.' : `Availability: ${book.availability.status}`}</p>
       <div className="library-actions">
-        <Button disabled={action.busy || !book.availability.canBorrow} onClick={() => void perform('/loans', 'Book borrowed. You can manage it in Active Loans.')}>Borrow book</Button>
+        <Button disabled={action.busy || !book.availability.canBorrow} onClick={() => void borrow()}>Borrow book</Button>
         <Button variant="outline" disabled={action.busy || saved} onClick={() => void perform('/wishlist', 'Added to your wishlist.')}>{saved ? 'Added to wishlist' : 'Add to wishlist'}</Button>
         {book.availability.canReserve && <Button variant="outline" disabled={action.busy} onClick={() => void perform('/reservations', 'Reservation created. Check Reservations for your queue position.')}>Reserve book</Button>}
       </div>

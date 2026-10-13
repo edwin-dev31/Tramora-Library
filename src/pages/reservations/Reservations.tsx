@@ -5,6 +5,7 @@ import { SavedBookCard } from '@/components/book/SavedBookCard';
 import { ListFeedback, ListMore } from '@/components/layout/ListFeedback';
 import { useLibraryList } from '@/hooks/useLibraryList';
 import { useLibraryAction } from '@/hooks/useLibraryAction';
+import { loansService } from '@/services/loans.service';
 import type { Reservation } from '@/types/library';
 
 const LABELS: Record<Reservation['status'], string> = { waiting: 'Waiting', ready: 'Ready to collect', expired: 'Expired', collected: 'Collected', cancelled: 'Cancelled' };
@@ -26,7 +27,9 @@ function ReservationList({ history }: { history: boolean }) {
       {item.status === 'ready' && item.expires_at && <p className="text-sm">Collect before: {new Date(item.expires_at).toLocaleString()}</p>}
       {!history && <>
         <label className="flex items-center gap-3 min-h-11 text-sm"><input type="checkbox" checked={item.notifications_enabled} disabled={action.busy} onChange={event => void update(`/reservations/${item.id}/notifications`, 'PUT', { notificationsEnabled: event.target.checked })} />Reservation notifications</label>
-        {item.status === 'ready' && <Button disabled={action.busy} onClick={() => void update('/loans', 'POST', { bookId: item.book.id })}>Borrow book</Button>}
+        {item.status === 'ready' && <Button disabled={action.busy} onClick={async () => {
+          if (await action.runOperation((token, signal) => loansService.borrow(item.book.id, token, signal))) await list.refetch();
+        }}>Borrow book</Button>}
         <Button variant="outline" disabled={action.busy} onClick={() => void update(`/reservations/${item.id}`, 'DELETE')}>Cancel reservation</Button>
       </>}
     </SavedBookCard>)}</div>

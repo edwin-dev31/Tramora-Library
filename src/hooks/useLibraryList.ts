@@ -4,10 +4,18 @@ import { useAuth } from '@/context/auth/useAuth';
 
 const PAGE_SIZE = 12;
 
+interface ListRequest {
+  limit: number;
+  offset: number;
+  signal: AbortSignal;
+}
+
+type ListLoader<T> = (accessToken: string, request: ListRequest) => Promise<T[]>;
+
 // Personal-library endpoints return arrays, unlike the paginated Google catalog.
-export function useLibraryList<T extends { id: string }>(path: string) {
+export function useLibraryList<T extends { id: string }>(source: string, loader?: ListLoader<T>) {
   const { accessToken } = useAuth();
-  const key = `${accessToken}:${path}`;
+  const key = `${accessToken}:${source}`;
   const [state, setState] = useState({ key, items: [] as T[], loading: true, error: '', hasMore: false });
   const active = useRef<AbortController | null>(null);
   const items = useRef<T[]>([]);
@@ -20,7 +28,9 @@ export function useLibraryList<T extends { id: string }>(path: string) {
     const offset = append ? items.current.length : 0;
     setState(previous => ({ ...previous, loading: true, error: '', ...(append ? {} : { items: [] }) }));
     try {
-      const page = await apiClient.authorized<T[]>(`${path}${path.includes('?') ? '&' : '?'}limit=${PAGE_SIZE}&offset=${offset}`, accessToken, { signal: controller.signal });
+      const page = loader
+        ? await loader(accessToken, { limit: PAGE_SIZE, offset, signal: controller.signal })
+        : await apiClient.authorized<T[]>(`${source}${source.includes('?') ? '&' : '?'}limit=${PAGE_SIZE}&offset=${offset}`, accessToken, { signal: controller.signal });
       if (controller.signal.aborted) return;
       const combined = append ? [...items.current, ...page] : page;
       items.current = Array.from(new Map(combined.map(item => [item.id, item])).values());
@@ -29,7 +39,7 @@ export function useLibraryList<T extends { id: string }>(path: string) {
       if (controller.signal.aborted) return;
       setState(previous => ({ ...previous, loading: false, error: error instanceof Error ? error.message : 'Unable to load your library.' }));
     }
-  }, [accessToken, path, key]);
+  }, [accessToken, source, key, loader]);
 
   useEffect(() => {
     items.current = [];

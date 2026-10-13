@@ -1,14 +1,19 @@
 import { Link, useParams } from 'react-router';
 import { Button } from '@/components/ui/button';
-import { useFetch } from '@/hooks/useFetch';
+import { useAsyncResource } from '@/hooks/useAsyncResource';
 import { useAuth } from '@/context/auth/useAuth';
 import { useLibraryAction } from '@/hooks/useLibraryAction';
+import { loansService } from '@/services/loans.service';
 import { LOAN_STATUS_LABELS, type Loan } from '@/types/loans';
 
 export default function LoanDetail() {
   const { id } = useParams<{ id: string }>();
   const { accessToken } = useAuth();
-  const { data: loan, error, isLoading, refetch } = useFetch<Loan>(id ? `/loans/${encodeURIComponent(id)}` : null, accessToken);
+  const requestKey = id && accessToken ? `loan:${id}:${accessToken}` : null;
+  const { data: loan, error, isLoading, refetch } = useAsyncResource<Loan>(
+    requestKey,
+    signal => loansService.getById(id!, accessToken!, signal),
+  );
   const action = useLibraryAction();
   return <div className="loan-detail-page">
     <Link to="/loans" className="library-text-link">Back to loans</Link>
@@ -28,8 +33,8 @@ export default function LoanDetail() {
         {Number(loan.fine_amount) > 0 && <><dt>Late fee</dt><dd>${Number(loan.fine_amount).toFixed(2)}</dd></>}
       </dl>
       {loan.status !== 'returned' && <div className="library-actions">
-        <Button variant="outline" disabled={action.busy || loan.renewal_count >= 2} onClick={async () => { if (await action.run(`/loans/${loan.id}/renew`, 'PUT')) refetch(); }}>Renew loan</Button>
-        <Button disabled={action.busy} onClick={async () => { if (await action.run(`/loans/${loan.id}/return`, 'PUT')) refetch(); }}>Return book</Button>
+        <Button variant="outline" disabled={action.busy || loan.renewal_count >= 2} onClick={async () => { if (await action.runOperation((token, signal) => loansService.renew(loan.id, token, signal))) refetch(); }}>Renew loan</Button>
+        <Button disabled={action.busy} onClick={async () => { if (await action.runOperation((token, signal) => loansService.returnLoan(loan.id, token, signal))) refetch(); }}>Return book</Button>
       </div>}
       <Link to={`/books/${encodeURIComponent(loan.book.id)}`} className="library-text-link">Book details</Link>
     </article>}

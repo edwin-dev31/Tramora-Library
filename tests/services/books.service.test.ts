@@ -2,13 +2,17 @@ import { apiClient } from '@/lib/fetch';
 import { booksService } from '@/services/books.service';
 
 jest.mock('@/lib/fetch', () => ({
-  apiClient: { get: jest.fn() },
+  apiClient: { get: jest.fn(), authorized: jest.fn() },
 }));
 
 const get = jest.mocked(apiClient.get);
+const authorized = jest.mocked(apiClient.authorized);
 
 describe('booksService', () => {
-  beforeEach(() => get.mockReset());
+  beforeEach(() => {
+    get.mockReset();
+    authorized.mockReset();
+  });
 
   it('builds an encoded catalog search request', async () => {
     const controller = new AbortController();
@@ -41,6 +45,19 @@ describe('booksService', () => {
     expect(get).toHaveBeenCalledWith(
       '/books?query=Dune&field=all&limit=12&offset=0',
       { signal: undefined },
+    );
+  });
+
+  it('loads an encoded book id through the authenticated API', async () => {
+    const controller = new AbortController();
+    authorized.mockResolvedValue({});
+
+    await booksService.getById('work/one', 'session-token', controller.signal);
+
+    expect(authorized).toHaveBeenCalledWith(
+      '/books/work%2Fone',
+      'session-token',
+      { signal: controller.signal },
     );
   });
 });

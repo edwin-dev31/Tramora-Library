@@ -2,10 +2,11 @@ import { Link } from 'react-router';
 import { SavedBookCard } from '@/components/book/SavedBookCard';
 import { ListFeedback, ListMore } from '@/components/layout/ListFeedback';
 import { useLibraryList } from '@/hooks/useLibraryList';
+import { loansService } from '@/services/loans.service';
 import type { ReadingEntry } from '@/types/library';
 
 export default function ReadingList() {
-  const list = useLibraryList<ReadingEntry>('/loans/reading');
+  const list = useLibraryList<ReadingEntry>('loans:reading', loansService.getReadingList);
   return <div className="reading-page">
     <header className="page-header"><h1 className="page-title">Currently Reading</h1><p className="page-description">Books marked as Reading in your wishlist.</p></header>
     <ListFeedback {...list} empty={!list.items.length} emptyText="Nothing in progress. Set a wishlist book to Reading to see it here." retry={list.refetch} />
