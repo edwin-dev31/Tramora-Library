@@ -21,12 +21,15 @@ describe('booksService', () => {
       pagination: { total: 0, limit: 20, offset: 40 },
     });
 
-    await booksService.search({
-      query: 'science fiction',
-      field: 'subject',
-      limit: 20,
-      offset: 40,
-    }, controller.signal);
+    await booksService.search(
+      {
+        query: 'science fiction',
+        field: 'subject',
+        limit: 20,
+        offset: 40,
+      },
+      controller.signal,
+    );
 
     expect(get).toHaveBeenCalledWith(
       '/books?query=science+fiction&field=subject&limit=20&offset=40',
@@ -42,10 +45,9 @@ describe('booksService', () => {
 
     await booksService.search({ query: 'Dune' });
 
-    expect(get).toHaveBeenCalledWith(
-      '/books?query=Dune&field=all&limit=12&offset=0',
-      { signal: undefined },
-    );
+    expect(get).toHaveBeenCalledWith('/books?query=Dune&field=all&limit=12&offset=0', {
+      signal: undefined,
+    });
   });
 
   it('loads an encoded book id through the authenticated API', async () => {
@@ -54,10 +56,8 @@ describe('booksService', () => {
 
     await booksService.getById('work/one', 'session-token', controller.signal);
 
-    expect(authorized).toHaveBeenCalledWith(
-      '/books/work%2Fone',
-      'session-token',
-      { signal: controller.signal },
-    );
+    expect(authorized).toHaveBeenCalledWith('/books/work%2Fone', 'session-token', {
+      signal: controller.signal,
+    });
   });
 });

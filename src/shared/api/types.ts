@@ -3,15 +3,17 @@ export interface ApiErrorPayload {
   details?: string[];
 }
 
-export type ApiResponse<T> = {
-  data: T;
-  error: null;
-  message: string;
-} | {
-  data: null;
-  error: ApiErrorPayload;
-  message: string;
-};
+export type ApiResponse<T> =
+  | {
+      data: T;
+      error: null;
+      message: string;
+    }
+  | {
+      data: null;
+      error: ApiErrorPayload;
+      message: string;
+    };
 
 export interface Page<T> {
   items: T[];

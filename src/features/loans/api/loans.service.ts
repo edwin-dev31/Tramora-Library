@@ -23,11 +23,7 @@ export const loansService = {
     list<ReadingEntry>(API_ENDPOINTS.loans.reading, accessToken, request),
 
   getById: (loanId: string, accessToken: string, signal?: AbortSignal): Promise<Loan> =>
-    apiClient.authorized<Loan>(
-      API_ENDPOINTS.loans.detail(loanId),
-      accessToken,
-      { signal },
-    ),
+    apiClient.authorized<Loan>(API_ENDPOINTS.loans.detail(loanId), accessToken, { signal }),
 
   borrow: (bookId: string, accessToken: string, signal?: AbortSignal) =>
     apiClient.authorized(API_ENDPOINTS.loans.list, accessToken, {

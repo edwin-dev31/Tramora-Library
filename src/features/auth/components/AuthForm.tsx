@@ -67,9 +67,18 @@ const AuthForm = ({ mode }: AuthFormProps) => {
   return (
     <>
       <CardContent className="px-6">
-        <form data-testid="auth-form" className="flex flex-col gap-5" onSubmit={handleSubmit} noValidate aria-busy={isSubmitting}>
+        <form
+          data-testid="auth-form"
+          className="flex flex-col gap-5"
+          onSubmit={handleSubmit}
+          noValidate
+          aria-busy={isSubmitting}
+        >
           {error && (
-            <Alert variant="destructive" role="alert">
+            <Alert
+              variant="destructive"
+              role="alert"
+            >
               <AlertDescription>{error}</AlertDescription>
             </Alert>
           )}
@@ -91,7 +100,14 @@ const AuthForm = ({ mode }: AuthFormProps) => {
                 aria-describedby={errors.name ? 'name-error' : undefined}
                 className="h-10"
               />
-              {errors.name && <p id="name-error" className="text-sm text-destructive">{errors.name}</p>}
+              {errors.name && (
+                <p
+                  id="name-error"
+                  className="text-sm text-destructive"
+                >
+                  {errors.name}
+                </p>
+              )}
             </div>
           )}
 
@@ -114,7 +130,14 @@ const AuthForm = ({ mode }: AuthFormProps) => {
               aria-describedby={errors.email ? 'email-error' : undefined}
               className="h-10"
             />
-            {errors.email && <p id="email-error" className="text-sm text-destructive">{errors.email}</p>}
+            {errors.email && (
+              <p
+                id="email-error"
+                className="text-sm text-destructive"
+              >
+                {errors.email}
+              </p>
+            )}
           </div>
 
           <div className="space-y-2">
@@ -130,13 +153,27 @@ const AuthForm = ({ mode }: AuthFormProps) => {
               minLength={8}
               disabled={isSubmitting}
               aria-invalid={Boolean(errors.password)}
-              aria-describedby={errors.password ? 'password-error' : isRegister ? 'password-hint' : undefined}
+              aria-describedby={
+                errors.password ? 'password-error' : isRegister ? 'password-hint' : undefined
+              }
               className="h-10"
             />
             {errors.password ? (
-              <p id="password-error" className="text-sm text-destructive">{errors.password}</p>
-            ) : isRegister && (
-              <p id="password-hint" className="text-sm text-muted-foreground">Use at least 8 characters.</p>
+              <p
+                id="password-error"
+                className="text-sm text-destructive"
+              >
+                {errors.password}
+              </p>
+            ) : (
+              isRegister && (
+                <p
+                  id="password-hint"
+                  className="text-sm text-muted-foreground"
+                >
+                  Use at least 8 characters.
+                </p>
+              )
             )}
           </div>
 
@@ -157,16 +194,34 @@ const AuthForm = ({ mode }: AuthFormProps) => {
                 className="h-10"
               />
               {errors.confirmPassword && (
-                <p id="confirm-password-error" className="text-sm text-destructive">{errors.confirmPassword}</p>
+                <p
+                  id="confirm-password-error"
+                  className="text-sm text-destructive"
+                >
+                  {errors.confirmPassword}
+                </p>
               )}
             </div>
           )}
 
-          <Button type="submit" className="h-10 w-full" disabled={isSubmitting}>
-            {isSubmitting && <LoaderCircle className="size-4 animate-spin" aria-hidden="true" />}
+          <Button
+            type="submit"
+            className="h-10 w-full"
+            disabled={isSubmitting}
+          >
+            {isSubmitting && (
+              <LoaderCircle
+                className="size-4 animate-spin"
+                aria-hidden="true"
+              />
+            )}
             {isSubmitting
-              ? isRegister ? 'Creating account...' : 'Signing in...'
-              : isRegister ? 'Create account' : 'Sign in'}
+              ? isRegister
+                ? 'Creating account...'
+                : 'Signing in...'
+              : isRegister
+                ? 'Create account'
+                : 'Sign in'}
           </Button>
         </form>
       </CardContent>

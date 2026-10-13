@@ -1,7 +1,7 @@
 import React from 'react';
 
 const createMockComponent = (name: string) => {
-  const MockComponent = ({ ...props }: any) => {
+  const MockComponent = (props: React.SVGProps<SVGSVGElement>) => {
     return React.createElement('svg', { 'data-testid': `icon-${name.toLowerCase()}`, ...props });
   };
   MockComponent.displayName = name;

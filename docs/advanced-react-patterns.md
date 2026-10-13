@@ -17,6 +17,7 @@ return () => controller.abort();
 ```
 
 **Para qué sirve:** Cancela peticiones HTTP en vuelo cuando:
+
 - El usuario navega a otra página (cleanup del useEffect)
 - Hace click en "cancelar"
 - Inicia otra request (evita race conditions)
@@ -77,18 +78,21 @@ dispatch({ type: 'validationFailed', errors });
 **Archivo:** `src/context/auth/AuthProvider.tsx` (líneas 147-158)
 
 ```ts
-const value = useMemo<AuthContextValue>(() => ({
-  user: state.user,
-  accessToken: state.accessToken,
-  status: state.status,
-  isSubmitting: state.isSubmitting,
-  error: state.error,
-  login,
-  register,
-  cancelPendingAuth,
-  logout,
-  clearError,
-}), [state, login, register, cancelPendingAuth, logout, clearError]);
+const value = useMemo<AuthContextValue>(
+  () => ({
+    user: state.user,
+    accessToken: state.accessToken,
+    status: state.status,
+    isSubmitting: state.isSubmitting,
+    error: state.error,
+    login,
+    register,
+    cancelPendingAuth,
+    logout,
+    clearError,
+  }),
+  [state, login, register, cancelPendingAuth, logout, clearError],
+);
 ```
 
 Sin `useMemo`, **cualquier cambio en AuthProvider** haría re-render a **todo el árbol** que use `useAuth()`. El memo evita crear objeto nuevo en cada render.
@@ -105,7 +109,7 @@ const submittingRef = useRef(false);
 const handleSubmit = async (event) => {
   event.preventDefault();
   if (submittingRef.current || isSubmitting) return; // Guard doble-submit
-  
+
   submittingRef.current = true;
   try {
     await register(...);
@@ -129,7 +133,7 @@ useEffect(() => {
   const expiresAt = state.expiresAt;
   const sessionRequest = activeRequest.current;
   let timeout: ReturnType<typeof setTimeout>;
-  
+
   const checkExpiration = () => {
     if (activeRequest.current !== sessionRequest) return;
     const remaining = expiresAt - Date.now();
@@ -140,11 +144,14 @@ useEffect(() => {
       timeout = setTimeout(checkExpiration, Math.min(remaining, 2_147_483_647));
     }
   };
-  
-  timeout = setTimeout(checkExpiration, Math.max(0, Math.min(expiresAt - Date.now(), 2_147_483_647)));
+
+  timeout = setTimeout(
+    checkExpiration,
+    Math.max(0, Math.min(expiresAt - Date.now(), 2_147_483_647)),
+  );
   window.addEventListener('focus', checkExpiration);
   document.addEventListener('visibilitychange', checkExpiration);
-  
+
   return () => {
     clearTimeout(timeout);
     window.removeEventListener('focus', checkExpiration);
@@ -163,7 +170,7 @@ useEffect(() => {
 
 ```ts
 // Servicio recibe signal como parámetro opcional
-login: (credentials, signal?: AbortSignal) => 
+login: (credentials, signal?: AbortSignal) =>
   apiClient.post('/auth/login', credentials, { signal }),
 
 // Provider lo inyecta
@@ -205,17 +212,17 @@ Evita warning de ESLint "Promise returned but not awaited" cuando **sabes** que 
 
 ## Tabla Resumen: Nivel de Dificultad
 
-| Concepto | Archivos | Nivel |
-|----------|----------|-------|
-| AbortController race guards | AuthProvider, useFetch | Avanzado |
-| useRef como "variable de instancia" | AuthProvider (activeRequest), AuthForm (submittingRef) | Intermedio |
-| useCallback + useRef para callbacks estables | AuthProvider (logout, authenticate) | Avanzado |
-| useReducer para forms | AuthForm + auth-form.reducer | Intermedio |
-| useMemo en Context value | AuthProvider | Avanzado |
-| DI de AbortSignal en services | auth.service + AuthProvider | Arquitectura |
-| Cleanup sincrónico de listeners/intervals | AuthProvider (session expiry) | Intermedio |
-| ReactNode para children | AuthProvider | Básico-Intermedio |
-| void para promesas ignoradas | AuthProvider | Intermedio |
+| Concepto                                     | Archivos                                               | Nivel             |
+| -------------------------------------------- | ------------------------------------------------------ | ----------------- |
+| AbortController race guards                  | AuthProvider, useFetch                                 | Avanzado          |
+| useRef como "variable de instancia"          | AuthProvider (activeRequest), AuthForm (submittingRef) | Intermedio        |
+| useCallback + useRef para callbacks estables | AuthProvider (logout, authenticate)                    | Avanzado          |
+| useReducer para forms                        | AuthForm + auth-form.reducer                           | Intermedio        |
+| useMemo en Context value                     | AuthProvider                                           | Avanzado          |
+| DI de AbortSignal en services                | auth.service + AuthProvider                            | Arquitectura      |
+| Cleanup sincrónico de listeners/intervals    | AuthProvider (session expiry)                          | Intermedio        |
+| ReactNode para children                      | AuthProvider                                           | Básico-Intermedio |
+| void para promesas ignoradas                 | AuthProvider                                           | Intermedio        |
 
 ---
 

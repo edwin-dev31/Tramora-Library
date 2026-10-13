@@ -51,6 +51,7 @@ npm run test:watch
 ```
 
 Test setup includes:
+
 - **Jest** with TypeScript support via ts-jest
 - **React Testing Library** for component testing
 - **@testing-library/jest-dom** for DOM matchers
@@ -58,11 +59,11 @@ Test setup includes:
 
 ## Scripts
 
-| Command | Description |
-|---------|-------------|
-| `npm run dev` | Start development server |
-| `npm run build` | Build for production |
-| `npm run preview` | Preview production build |
-| `npm run lint` | Run ESLint |
-| `npm test` | Run tests |
-| `npm run test:watch` | Run tests in watch mode |
+| Command              | Description              |
+| -------------------- | ------------------------ |
+| `npm run dev`        | Start development server |
+| `npm run build`      | Build for production     |
+| `npm run preview`    | Preview production build |
+| `npm run lint`       | Run ESLint               |
+| `npm test`           | Run tests                |
+| `npm run test:watch` | Run tests in watch mode  |

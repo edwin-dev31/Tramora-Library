@@ -19,18 +19,32 @@ const user = { id: 'reader-1', name: 'Reader', email: 'reader@example.com' };
 
 function AuthProbe() {
   const auth = useAuth();
-  return <>
-    <span data-testid="status">{auth.status}</span>
-    <span data-testid="access-token">{auth.accessToken ?? ''}</span>
-    {auth.user && <span>{auth.user.name}</span>}
-    <button type="button" onClick={() => void auth.login({
-      email: 'reader@example.com',
-      password: 'password123',
-    })}>Log in</button>
-  </>;
+  return (
+    <>
+      <span data-testid="status">{auth.status}</span>
+      <span data-testid="access-token">{auth.accessToken ?? ''}</span>
+      {auth.user && <span>{auth.user.name}</span>}
+      <button
+        type="button"
+        onClick={() =>
+          void auth.login({
+            email: 'reader@example.com',
+            password: 'password123',
+          })
+        }
+      >
+        Log in
+      </button>
+    </>
+  );
 }
 
-const renderProvider = () => render(<AuthProvider><AuthProbe /></AuthProvider>);
+const renderProvider = () =>
+  render(
+    <AuthProvider>
+      <AuthProbe />
+    </AuthProvider>,
+  );
 
 describe('AuthProvider session lifecycle', () => {
   beforeEach(() => {

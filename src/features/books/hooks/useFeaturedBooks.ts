@@ -25,31 +25,37 @@ export function useFeaturedBooks() {
     const controller = new AbortController();
     const genre = BOOK_GENRES[Math.floor(Math.random() * BOOK_GENRES.length)];
 
-    booksService.search({
-      query: genre.query,
-      field: 'subject',
-      limit: FEATURED_LIMIT,
-      offset: 0,
-    }, controller.signal).then(page => {
-      if (!controller.signal.aborted) {
-        setState({ books: page.items, loading: false, error: '' });
-      }
-    }).catch((error: unknown) => {
-      if (!controller.signal.aborted) {
-        setState({
-          books: [],
-          loading: false,
-          error: error instanceof Error ? error.message : 'Unable to load featured books.',
-        });
-      }
-    });
+    booksService
+      .search(
+        {
+          query: genre.query,
+          field: 'subject',
+          limit: FEATURED_LIMIT,
+          offset: 0,
+        },
+        controller.signal,
+      )
+      .then((page) => {
+        if (!controller.signal.aborted) {
+          setState({ books: page.items, loading: false, error: '' });
+        }
+      })
+      .catch((error: unknown) => {
+        if (!controller.signal.aborted) {
+          setState({
+            books: [],
+            loading: false,
+            error: error instanceof Error ? error.message : 'Unable to load featured books.',
+          });
+        }
+      });
 
     return () => controller.abort();
   }, [revision]);
 
   const retry = useCallback(() => {
-    setState(previous => ({ ...previous, loading: true, error: '' }));
-    setRevision(value => value + 1);
+    setState((previous) => ({ ...previous, loading: true, error: '' }));
+    setRevision((value) => value + 1);
   }, []);
 
   return { ...state, retry };

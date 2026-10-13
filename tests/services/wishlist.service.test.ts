@@ -20,11 +20,9 @@ describe('wishlistService', () => {
       signal: controller.signal,
     });
 
-    expect(authorized).toHaveBeenCalledWith(
-      '/wishlist?limit=12&offset=24',
-      'session-token',
-      { signal: controller.signal },
-    );
+    expect(authorized).toHaveBeenCalledWith('/wishlist?limit=12&offset=24', 'session-token', {
+      signal: controller.signal,
+    });
   });
 
   it('adds a book to the wishlist', async () => {

@@ -20,24 +20,29 @@ export const useAsyncResource = <T>(
     error: string;
   }>({ key: '', data: null, error: '' });
 
-  loader.current = load;
+  useEffect(() => {
+    loader.current = load;
+  }, [load]);
 
   useEffect(() => {
     if (!key) return;
     const controller = new AbortController();
 
-    loader.current(controller.signal).then(data => {
-      if (!controller.signal.aborted) setResult({ key: requestKey, data, error: '' });
-    }).catch((error: Error) => {
-      if (!controller.signal.aborted) {
-        setResult({ key: requestKey, data: null, error: error.message });
-      }
-    });
+    loader
+      .current(controller.signal)
+      .then((data) => {
+        if (!controller.signal.aborted) setResult({ key: requestKey, data, error: '' });
+      })
+      .catch((error: Error) => {
+        if (!controller.signal.aborted) {
+          setResult({ key: requestKey, data: null, error: error.message });
+        }
+      });
 
     return () => controller.abort();
   }, [key, requestKey]);
 
-  const refetch = useCallback(() => setRevision(value => value + 1), []);
+  const refetch = useCallback(() => setRevision((value) => value + 1), []);
 
   return {
     data: key && result.key === requestKey ? result.data : null,

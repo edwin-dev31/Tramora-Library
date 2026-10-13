@@ -14,7 +14,7 @@ const Skeleton = ({ className, variant = 'text', ...props }: SkeletonProps) => {
           'h-10 w-10 rounded-full': variant === 'circular',
           'h-16 w-16 rounded-lg': variant === 'rectangular',
         },
-        className
+        className,
       )}
       {...props}
     />

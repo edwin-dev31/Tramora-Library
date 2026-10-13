@@ -5,8 +5,17 @@ export const Outlet = () => <div data-testid="outlet" />;
 export const Routes = ({ children }: { children: React.ReactNode }) => <>{children}</>;
 export const Route = ({ children }: { children: React.ReactNode }) => <>{children}</>;
 
-export const Link = ({ to, children, ...props }: { to: string; children: React.ReactNode; [key: string]: any }) => (
-  <a href={to} {...props}>{children}</a>
+interface LinkProps extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
+  to: string;
+}
+
+export const Link = ({ to, children, ...props }: LinkProps) => (
+  <a
+    href={to}
+    {...props}
+  >
+    {children}
+  </a>
 );
 
 export const NavLink = Link;

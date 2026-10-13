@@ -1,15 +1,22 @@
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { useLibraryList } from '@/shared/hooks/useLibraryList';
 
-jest.mock('@/features/auth/context/useAuth', () => ({ useAuth: () => ({ accessToken: 'test-session' }) }));
+jest.mock('@/features/auth/context/useAuth', () => ({
+  useAuth: () => ({ accessToken: 'test-session' }),
+}));
 
 it('passes pagination to the service loader and appends three pages without replacing previous items', async () => {
   const loader = jest.fn(async (_accessToken: string, request: { offset: number }) =>
-    Array.from({ length: request.offset === 24 ? 1 : 12 }, (_, index) => ({ id: `${request.offset + index}` }))
+    Array.from({ length: request.offset === 24 ? 1 : 12 }, (_, index) => ({
+      id: `${request.offset + index}`,
+    })),
   );
   const { result } = renderHook(() => useLibraryList<{ id: string }>('wishlist', loader));
   await waitFor(() => expect(result.current.items).toHaveLength(12));
-  expect(loader).toHaveBeenCalledWith('test-session', expect.objectContaining({ limit: 12, offset: 0, signal: expect.any(AbortSignal) }));
+  expect(loader).toHaveBeenCalledWith(
+    'test-session',
+    expect.objectContaining({ limit: 12, offset: 0, signal: expect.any(AbortSignal) }),
+  );
   act(() => result.current.loadMore());
   await waitFor(() => expect(result.current.items).toHaveLength(24));
   act(() => result.current.loadMore());
@@ -19,7 +26,8 @@ it('passes pagination to the service loader and appends three pages without repl
 });
 
 it('shows an action refresh error and permits a retry', async () => {
-  const loader = jest.fn()
+  const loader = jest
+    .fn()
     .mockResolvedValueOnce([{ id: 'saved' }])
     .mockRejectedValueOnce(new Error('Session expired'))
     .mockResolvedValueOnce([]);

@@ -57,7 +57,10 @@ const ThemeSwitch = () => {
   };
 
   return (
-    <div className="flex items-center gap-1.5" title={isDark ? 'Dark mode' : 'Light mode'}>
+    <div
+      className="flex items-center gap-1.5"
+      title={isDark ? 'Dark mode' : 'Light mode'}
+    >
       <Sun
         className={`size-4 transition-colors ${isDark ? 'text-muted-foreground' : 'text-primary'}`}
         aria-hidden="true"

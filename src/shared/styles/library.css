@@ -83,7 +83,7 @@
     font-size: 1rem;
   }
 
-  button[data-slot="button"] {
+  button[data-slot='button'] {
     min-height: 2.75rem;
   }
 
@@ -150,7 +150,7 @@
 }
 
 @variant md {
-  button[data-slot="button"] {
+  button[data-slot='button'] {
     min-height: initial;
   }
 }

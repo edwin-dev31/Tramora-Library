@@ -14,7 +14,16 @@ afterEach(() => jest.restoreAllMocks());
 it('loads featured books from a randomly selected genre', async () => {
   jest.spyOn(Math, 'random').mockReturnValue(0);
   request.mockResolvedValue({
-    items: [{ id: 'featured-1', title: 'Featured Book', authors: ['Author'], coverUrl: null, description: null, publishedDate: null }],
+    items: [
+      {
+        id: 'featured-1',
+        title: 'Featured Book',
+        authors: ['Author'],
+        coverUrl: null,
+        description: null,
+        publishedDate: null,
+      },
+    ],
     pagination: { total: 1, limit: 15, offset: 0 },
   });
 
@@ -30,12 +39,19 @@ it('loads featured books from a randomly selected genre', async () => {
 
 it('allows retrying the featured selection after a provider failure', async () => {
   jest.spyOn(Math, 'random').mockReturnValue(0);
-  request
-    .mockRejectedValueOnce(new Error('Featured books unavailable'))
-    .mockResolvedValueOnce({
-      items: [{ id: 'featured-2', title: 'Recovered Book', authors: ['Author'], coverUrl: null, description: null, publishedDate: null }],
-      pagination: { total: 1, limit: 15, offset: 0 },
-    });
+  request.mockRejectedValueOnce(new Error('Featured books unavailable')).mockResolvedValueOnce({
+    items: [
+      {
+        id: 'featured-2',
+        title: 'Recovered Book',
+        authors: ['Author'],
+        coverUrl: null,
+        description: null,
+        publishedDate: null,
+      },
+    ],
+    pagination: { total: 1, limit: 15, offset: 0 },
+  });
 
   render(<Home />);
 
@@ -47,12 +63,22 @@ it('allows retrying the featured selection after a provider failure', async () =
 });
 
 it('uses the selected field, keeps prior results and advances pagination past page two', async () => {
-  request.mockImplementation(async options => {
+  request.mockImplementation(async (options) => {
     if (options.limit === 15) {
       return { items: [], pagination: { total: 0, limit: 15, offset: 0 } };
     }
     const offset = options.offset ?? 0;
-    return { items: Array.from({ length: 12 }, (_, i) => ({ id: String(offset + i), title: `Book ${offset + i}`, authors: ['Author'], coverUrl: null, description: null, publishedDate: null })), pagination: { total: 36, limit: 12, offset } };
+    return {
+      items: Array.from({ length: 12 }, (_, i) => ({
+        id: String(offset + i),
+        title: `Book ${offset + i}`,
+        authors: ['Author'],
+        coverUrl: null,
+        description: null,
+        publishedDate: null,
+      })),
+      pagination: { total: 36, limit: 12, offset },
+    };
   });
   Element.prototype.scrollIntoView = jest.fn();
   render(<Home />);
@@ -77,7 +103,7 @@ it('uses the selected field, keeps prior results and advances pagination past pa
 });
 
 it('reports provider failure without automatically retrying', async () => {
-  request.mockImplementation(async options => {
+  request.mockImplementation(async (options) => {
     if (options.limit === 15) {
       return { items: [], pagination: { total: 0, limit: 15, offset: 0 } };
     }
@@ -87,6 +113,8 @@ it('reports provider failure without automatically retrying', async () => {
   render(<Home />);
   fireEvent.change(screen.getByLabelText('Search books'), { target: { value: 'unavailable' } });
   fireEvent.click(screen.getByRole('button', { name: 'Search' }));
-  await waitFor(() => expect(screen.getByRole('alert')).toHaveTextContent('Book provider unavailable'));
+  await waitFor(() =>
+    expect(screen.getByRole('alert')).toHaveTextContent('Book provider unavailable'),
+  );
   expect(request.mock.calls.filter(([options]) => options.query === 'unavailable')).toHaveLength(1);
 });

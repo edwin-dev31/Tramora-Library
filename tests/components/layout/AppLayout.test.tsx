@@ -33,7 +33,7 @@ const renderAppLayout = () => {
       <AuthProvider>
         <AppLayout />
       </AuthProvider>
-    </MemoryRouter>
+    </MemoryRouter>,
   );
 };
 
@@ -90,7 +90,7 @@ describe('AppLayout', () => {
     mockUser = { id: '1', name: 'A'.repeat(50), email: 'john@example.com' };
     mockStatus = 'authenticated';
     renderAppLayout();
-    
+
     const nameSpan = screen.getByTitle('A'.repeat(50));
     expect(nameSpan).toHaveClass('truncate');
     expect(nameSpan).toHaveClass('max-w-40');
@@ -152,7 +152,11 @@ describe('AppLayout', () => {
 
   describe('Authenticated user', () => {
     it('shows user name with max width and truncate', () => {
-      mockUser = { id: '1', name: 'Very Long User Name That Should Be Truncated', email: 'test@example.com' };
+      mockUser = {
+        id: '1',
+        name: 'Very Long User Name That Should Be Truncated',
+        email: 'test@example.com',
+      };
       mockStatus = 'authenticated';
       renderAppLayout();
       const nameSpan = screen.getByTitle('Very Long User Name That Should Be Truncated');

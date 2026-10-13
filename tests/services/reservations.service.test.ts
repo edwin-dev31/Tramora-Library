@@ -73,10 +73,9 @@ describe('reservationsService', () => {
 
     await reservationsService.cancel('reservation/one', 'session-token');
 
-    expect(authorized).toHaveBeenCalledWith(
-      '/reservations/reservation%2Fone',
-      'session-token',
-      { method: 'DELETE', signal: undefined },
-    );
+    expect(authorized).toHaveBeenCalledWith('/reservations/reservation%2Fone', 'session-token', {
+      method: 'DELETE',
+      signal: undefined,
+    });
   });
 });

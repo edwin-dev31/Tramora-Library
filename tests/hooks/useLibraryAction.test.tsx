@@ -7,8 +7,11 @@ jest.mock('@/features/auth/context/useAuth', () => ({
 
 it('tracks mutations per item and permits operations on different rows', async () => {
   let releaseFirst!: () => void;
-  const firstOperation = jest.fn((_token: string, _signal: AbortSignal) =>
-    new Promise<void>(resolve => { releaseFirst = resolve; })
+  const firstOperation = jest.fn(
+    () =>
+      new Promise<void>((resolve) => {
+        releaseFirst = resolve;
+      }),
   );
   const secondOperation = jest.fn().mockResolvedValue(undefined);
   const duplicateOperation = jest.fn().mockResolvedValue(undefined);

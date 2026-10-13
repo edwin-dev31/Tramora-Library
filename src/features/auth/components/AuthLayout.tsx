@@ -18,18 +18,22 @@ const AuthLayout = ({ title, description, children }: AuthLayoutProps) => (
       to="/"
       className="mx-auto inline-flex items-center gap-2 rounded-md text-lg font-semibold outline-none focus-visible:ring-[0.125rem] focus-visible:ring-ring"
     >
-      <BookOpen className="size-6" aria-hidden="true" />
+      <BookOpen
+        className="size-6"
+        aria-hidden="true"
+      />
       Library
     </Link>
 
     <Card className="gap-6 py-6">
       <CardHeader className="gap-2 px-6">
-        <h1 id="auth-heading" className="text-2xl font-semibold tracking-tight">
+        <h1
+          id="auth-heading"
+          className="text-2xl font-semibold tracking-tight"
+        >
           {title}
         </h1>
-        <CardDescription className="leading-relaxed">
-          {description}
-        </CardDescription>
+        <CardDescription className="leading-relaxed">{description}</CardDescription>
       </CardHeader>
       {children}
     </Card>

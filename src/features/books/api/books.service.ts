@@ -15,14 +15,6 @@ export const booksService = {
     return apiClient.get<Page<Book>>(`${API_ENDPOINTS.books.list}?${params}`, { signal });
   },
 
-  getById: (
-    bookId: string,
-    accessToken: string,
-    signal?: AbortSignal,
-  ): Promise<BookDetails> =>
-    apiClient.authorized<BookDetails>(
-      API_ENDPOINTS.books.detail(bookId),
-      accessToken,
-      { signal },
-    ),
+  getById: (bookId: string, accessToken: string, signal?: AbortSignal): Promise<BookDetails> =>
+    apiClient.authorized<BookDetails>(API_ENDPOINTS.books.detail(bookId), accessToken, { signal }),
 };

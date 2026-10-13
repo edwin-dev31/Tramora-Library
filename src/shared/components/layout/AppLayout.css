@@ -36,7 +36,9 @@
 .library-brand {
   color: var(--foreground);
   letter-spacing: -0.025em;
-  transition: color 0.2s ease, transform 0.2s ease;
+  transition:
+    color 0.2s ease,
+    transform 0.2s ease;
 }
 
 .library-brand:hover {

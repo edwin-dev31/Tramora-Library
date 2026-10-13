@@ -16,11 +16,15 @@ export const readAuthSession = (): AuthSession | null => {
     if (!stored) return null;
     const session: unknown = JSON.parse(stored);
     if (
-      typeof session === 'object' && session !== null
-      && 'accessToken' in session && typeof session.accessToken === 'string'
-      && session.accessToken.trim().length > 0
-      && 'expiresAt' in session && typeof session.expiresAt === 'number'
-      && Number.isSafeInteger(session.expiresAt) && session.expiresAt > Date.now()
+      typeof session === 'object' &&
+      session !== null &&
+      'accessToken' in session &&
+      typeof session.accessToken === 'string' &&
+      session.accessToken.trim().length > 0 &&
+      'expiresAt' in session &&
+      typeof session.expiresAt === 'number' &&
+      Number.isSafeInteger(session.expiresAt) &&
+      session.expiresAt > Date.now()
     ) {
       return { accessToken: session.accessToken, expiresAt: session.expiresAt };
     }

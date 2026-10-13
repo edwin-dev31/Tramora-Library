@@ -14,11 +14,7 @@ const mockLogout = jest.fn();
 let mockIsSubmitting = false;
 let mockError: string | null = null;
 
-const createMockAuth = (_overrides: Partial<{
-  isSubmitting: boolean;
-  error: string | null;
-}> = {}) => {
-  
+const createMockAuth = () => {
   return {
     login: mockLogin,
     register: mockRegister,
@@ -46,7 +42,7 @@ const renderAuthForm = (mode: 'login' | 'register') => {
       <AuthProvider>
         <AuthForm mode={mode} />
       </AuthProvider>
-    </MemoryRouter>
+    </MemoryRouter>,
   );
 };
 

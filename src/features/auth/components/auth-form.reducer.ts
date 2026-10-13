@@ -24,10 +24,7 @@ export const initialAuthFormState: AuthFormState = {
   errors: {},
 };
 
-export const authFormReducer = (
-  state: AuthFormState,
-  action: AuthFormAction,
-): AuthFormState => {
+export const authFormReducer = (state: AuthFormState, action: AuthFormAction): AuthFormState => {
   switch (action.type) {
     case 'fieldChanged': {
       const errors = { ...state.errors };
@@ -44,10 +41,7 @@ export const authFormReducer = (
   }
 };
 
-export const validateAuthForm = (
-  values: AuthFormValues,
-  mode: AuthFormMode,
-): AuthFormErrors => {
+export const validateAuthForm = (values: AuthFormValues, mode: AuthFormMode): AuthFormErrors => {
   const errors: AuthFormErrors = {};
   const name = values.name.trim();
   const email = values.email.trim();

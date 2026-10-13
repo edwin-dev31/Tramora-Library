@@ -7,10 +7,13 @@ export function useLibraryAction() {
   const [pendingKeys, setPendingKeys] = useState<Set<string>>(() => new Set());
   const [error, setError] = useState('');
 
-  useEffect(() => () => {
-    active.current.forEach(controller => controller.abort());
-    active.current.clear();
-  }, []);
+  useEffect(
+    () => () => {
+      active.current.forEach((controller) => controller.abort());
+      active.current.clear();
+    },
+    [],
+  );
 
   const runOperation = async (
     key: string,
@@ -19,7 +22,7 @@ export function useLibraryAction() {
     if (active.current.has(key) || !accessToken) return false;
     const controller = new AbortController();
     active.current.set(key, controller);
-    setPendingKeys(previous => new Set(previous).add(key));
+    setPendingKeys((previous) => new Set(previous).add(key));
     setError('');
     try {
       await operation(accessToken, controller.signal);
@@ -32,7 +35,7 @@ export function useLibraryAction() {
       if (active.current.get(key) === controller) {
         active.current.delete(key);
         if (!controller.signal.aborted) {
-          setPendingKeys(previous => {
+          setPendingKeys((previous) => {
             const next = new Set(previous);
             next.delete(key);
             return next;

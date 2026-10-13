@@ -167,7 +167,10 @@
   min-height: 3.25rem;
   border-color: color-mix(in oklab, var(--border) 85%, var(--primary));
   background: color-mix(in oklab, var(--card) 78%, transparent);
-  transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease,
+    background 0.2s ease;
 }
 
 .categories-grid .category-card:hover {

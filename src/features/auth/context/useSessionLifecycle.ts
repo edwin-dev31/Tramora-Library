@@ -1,5 +1,9 @@
 import { useCallback, useEffect, useRef, type Dispatch } from 'react';
-import { clearAuthSession, readAuthSession, saveAuthSession } from '@/features/auth/model/auth-storage';
+import {
+  clearAuthSession,
+  readAuthSession,
+  saveAuthSession,
+} from '@/features/auth/model/auth-storage';
 import { subscribeToUnauthorized } from '@/shared/api/http';
 import type { AuthAction } from '@/features/auth/model/auth.reducer';
 import { authService, ApiError } from '@/features/auth/api/auth.service';
@@ -13,11 +17,7 @@ interface SessionLifecycleOptions {
   dispatch: Dispatch<AuthAction>;
 }
 
-export function useSessionLifecycle({
-  status,
-  expiresAt,
-  dispatch,
-}: SessionLifecycleOptions) {
+export function useSessionLifecycle({ status, expiresAt, dispatch }: SessionLifecycleOptions) {
   const activeRequest = useRef<AbortController | null>(null);
   const pendingSubmission = useRef<AbortController | null>(null);
 
@@ -77,46 +77,48 @@ export function useSessionLifecycle({
     };
   }, [dispatch]);
 
-  const authenticate = useCallback(async (
-    submit: (signal: AbortSignal) => Promise<AuthToken>,
-  ): Promise<boolean> => {
-    activeRequest.current?.abort();
-    const controller = new AbortController();
-    activeRequest.current = controller;
-    pendingSubmission.current = controller;
-    clearAuthSession();
-    dispatch({ type: 'SUBMIT' });
+  const authenticate = useCallback(
+    async (submit: (signal: AbortSignal) => Promise<AuthToken>): Promise<boolean> => {
+      activeRequest.current?.abort();
+      const controller = new AbortController();
+      activeRequest.current = controller;
+      pendingSubmission.current = controller;
+      clearAuthSession();
+      dispatch({ type: 'SUBMIT' });
 
-    try {
-      const token = await submit(controller.signal);
-      if (activeRequest.current !== controller) return false;
-      const session = {
-        accessToken: token.accessToken,
-        expiresAt: Date.now() + token.expiresIn * 1000,
-      };
-      const user = await authService.getCurrentUser(token.accessToken, controller.signal);
-      if (activeRequest.current !== controller) return false;
-      if (session.expiresAt <= Date.now()) {
-        throw new Error('Your session expired. Please sign in again.');
+      try {
+        const token = await submit(controller.signal);
+        if (activeRequest.current !== controller) return false;
+        const session = {
+          accessToken: token.accessToken,
+          expiresAt: Date.now() + token.expiresIn * 1000,
+        };
+        const user = await authService.getCurrentUser(token.accessToken, controller.signal);
+        if (activeRequest.current !== controller) return false;
+        if (session.expiresAt <= Date.now()) {
+          throw new Error('Your session expired. Please sign in again.');
+        }
+        saveAuthSession(session);
+        dispatch({ type: 'AUTHENTICATED', user, session });
+        return true;
+      } catch (error) {
+        if (activeRequest.current !== controller) return false;
+        const message =
+          error instanceof ApiError
+            ? error.message
+            : error instanceof Error
+              ? error.message
+              : 'Unable to sign in. Please try again.';
+        dispatch({ type: 'ANONYMOUS', error: message });
+        return false;
+      } finally {
+        if (pendingSubmission.current === controller) {
+          pendingSubmission.current = null;
+        }
       }
-      saveAuthSession(session);
-      dispatch({ type: 'AUTHENTICATED', user, session });
-      return true;
-    } catch (error) {
-      if (activeRequest.current !== controller) return false;
-      const message = error instanceof ApiError
-        ? error.message
-        : error instanceof Error
-          ? error.message
-          : 'Unable to sign in. Please try again.';
-      dispatch({ type: 'ANONYMOUS', error: message });
-      return false;
-    } finally {
-      if (pendingSubmission.current === controller) {
-        pendingSubmission.current = null;
-      }
-    }
-  }, [dispatch]);
+    },
+    [dispatch],
+  );
 
   useEffect(() => {
     if (status !== 'authenticated') return;

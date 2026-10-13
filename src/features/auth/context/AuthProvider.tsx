@@ -14,26 +14,34 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     dispatch,
   });
 
-  const login = useCallback((credentials: LoginCredentials) =>
-    authenticate((signal) => authService.login(credentials, signal)), [authenticate]);
+  const login = useCallback(
+    (credentials: LoginCredentials) =>
+      authenticate((signal) => authService.login(credentials, signal)),
+    [authenticate],
+  );
 
-  const register = useCallback((input: RegisterInput) =>
-    authenticate((signal) => authService.register(input, signal)), [authenticate]);
+  const register = useCallback(
+    (input: RegisterInput) => authenticate((signal) => authService.register(input, signal)),
+    [authenticate],
+  );
 
   const clearError = useCallback(() => dispatch({ type: 'CLEAR_ERROR' }), []);
 
-  const value = useMemo<AuthContextValue>(() => ({
-    user: state.user,
-    accessToken: state.accessToken,
-    status: state.status,
-    isSubmitting: state.isSubmitting,
-    error: state.error,
-    login,
-    register,
-    cancelPendingAuth,
-    logout,
-    clearError,
-  }), [state, login, register, cancelPendingAuth, logout, clearError]);
+  const value = useMemo<AuthContextValue>(
+    () => ({
+      user: state.user,
+      accessToken: state.accessToken,
+      status: state.status,
+      isSubmitting: state.isSubmitting,
+      error: state.error,
+      login,
+      register,
+      cancelPendingAuth,
+      logout,
+      clearError,
+    }),
+    [state, login, register, cancelPendingAuth, logout, clearError],
+  );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

@@ -50,13 +50,23 @@ describe('BookCard', () => {
   });
 
   it('applies compact variant class when variant is compact', () => {
-    const { container } = render(<BookCard book={mockBook} variant="compact" />);
+    const { container } = render(
+      <BookCard
+        book={mockBook}
+        variant="compact"
+      />,
+    );
     const card = container.querySelector('.book-card--compact');
     expect(card).toBeInTheDocument();
   });
 
   it('does not apply compact variant class when variant is default', () => {
-    const { container } = render(<BookCard book={mockBook} variant="default" />);
+    const { container } = render(
+      <BookCard
+        book={mockBook}
+        variant="default"
+      />,
+    );
     const card = container.querySelector('.book-card--compact');
     expect(card).not.toBeInTheDocument();
   });

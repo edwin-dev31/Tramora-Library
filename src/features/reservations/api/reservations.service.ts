@@ -9,11 +9,9 @@ const list = (path: string, accessToken: string, request: ListRequest) => {
     offset: String(request.offset),
   });
 
-  return apiClient.authorized<Reservation[]>(
-    `${path}?${params}`,
-    accessToken,
-    { signal: request.signal },
-  );
+  return apiClient.authorized<Reservation[]>(`${path}?${params}`, accessToken, {
+    signal: request.signal,
+  });
 };
 
 export const reservationsService = {
@@ -49,9 +47,8 @@ export const reservationsService = {
     ),
 
   cancel: (reservationId: string, accessToken: string, signal?: AbortSignal) =>
-    apiClient.authorized<void>(
-      API_ENDPOINTS.reservations.detail(reservationId),
-      accessToken,
-      { method: 'DELETE', signal },
-    ),
+    apiClient.authorized<void>(API_ENDPOINTS.reservations.detail(reservationId), accessToken, {
+      method: 'DELETE',
+      signal,
+    }),
 };

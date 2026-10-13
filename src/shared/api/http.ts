@@ -12,7 +12,7 @@ export const subscribeToUnauthorized = (listener: () => void) => {
 };
 
 const notifyUnauthorized = () => {
-  unauthorizedListeners.forEach(listener => {
+  unauthorizedListeners.forEach((listener) => {
     try {
       listener();
     } catch {
@@ -26,7 +26,13 @@ export class ApiError extends Error {
   public readonly code?: string;
   public readonly details?: string[];
 
-  constructor(message: string, status: number, code?: string, details?: string[], options?: ErrorOptions) {
+  constructor(
+    message: string,
+    status: number,
+    code?: string,
+    details?: string[],
+    options?: ErrorOptions,
+  ) {
     super(message, options);
     this.name = 'ApiError';
     this.status = status;
@@ -44,7 +50,7 @@ async function parseResponse<T>(response: Response): Promise<T> {
       response.ok
         ? 'The server returned an invalid response. Please try again.'
         : fallbackMessage(response.status),
-      response.status
+      response.status,
     );
   }
 
@@ -61,7 +67,7 @@ async function parseResponse<T>(response: Response): Promise<T> {
       response.ok
         ? 'The server returned an invalid response. Please try again.'
         : fallbackMessage(response.status),
-      response.status
+      response.status,
     );
   }
 
@@ -70,14 +76,14 @@ async function parseResponse<T>(response: Response): Promise<T> {
       payload.message || fallbackMessage(response.status),
       response.status,
       payload.error?.code,
-      payload.error?.details
+      payload.error?.details,
     );
   }
 
   if (payload.error !== null || payload.data === undefined) {
     throw new ApiError(
       'The server returned an invalid response. Please try again.',
-      response.status
+      response.status,
     );
   }
 
@@ -93,10 +99,7 @@ function fallbackMessage(status: number): string {
   return 'Unable to complete your request. Please try again.';
 }
 
-export async function fetchJson<T>(
-  path: string,
-  options: RequestInit = {}
-): Promise<T> {
+export async function fetchJson<T>(path: string, options: RequestInit = {}): Promise<T> {
   const url = `${API_BASE}${path}`;
 
   let response: Response;
@@ -104,7 +107,13 @@ export async function fetchJson<T>(
     response = await fetch(url, options);
   } catch (error) {
     if (options.signal?.aborted) throw error;
-    throw new ApiError('Unable to connect to the server. Please try again.', 0, 'NETWORK_ERROR', undefined, { cause: error });
+    throw new ApiError(
+      'Unable to connect to the server. Please try again.',
+      0,
+      'NETWORK_ERROR',
+      undefined,
+      { cause: error },
+    );
   }
 
   const headers = new Headers(options.headers);

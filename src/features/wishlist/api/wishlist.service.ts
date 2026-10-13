@@ -31,21 +31,16 @@ export const wishlistService = {
     accessToken: string,
     signal?: AbortSignal,
   ) =>
-    apiClient.authorized<void>(
-      API_ENDPOINTS.wishlist.entry(entryId),
-      accessToken,
-      {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status }),
-        signal,
-      },
-    ),
+    apiClient.authorized<void>(API_ENDPOINTS.wishlist.entry(entryId), accessToken, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status }),
+      signal,
+    }),
 
   remove: (entryId: string, accessToken: string, signal?: AbortSignal) =>
-    apiClient.authorized<void>(
-      API_ENDPOINTS.wishlist.entry(entryId),
-      accessToken,
-      { method: 'DELETE', signal },
-    ),
+    apiClient.authorized<void>(API_ENDPOINTS.wishlist.entry(entryId), accessToken, {
+      method: 'DELETE',
+      signal,
+    }),
 };

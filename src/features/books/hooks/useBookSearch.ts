@@ -58,7 +58,7 @@ function reducer(state: BookSearchState, action: BookSearchAction): BookSearchSt
       };
     case 'success': {
       const books = action.append ? [...state.books, ...action.page.items] : action.page.items;
-      const uniqueBooks = Array.from(new Map(books.map(book => [book.id, book])).values());
+      const uniqueBooks = Array.from(new Map(books.map((book) => [book.id, book])).values());
       const offset = action.offset + action.page.items.length;
 
       return {
@@ -80,26 +80,28 @@ export function useBookSearch(onInitialLoadSettled?: () => void) {
   const [state, dispatch] = useReducer(reducer, initialState);
   const pending = useRef<AbortController | null>(null);
   const onInitialLoadSettledRef = useRef(onInitialLoadSettled);
-  onInitialLoadSettledRef.current = onInitialLoadSettled;
+
+  useEffect(() => {
+    onInitialLoadSettledRef.current = onInitialLoadSettled;
+  }, [onInitialLoadSettled]);
 
   useEffect(() => () => pending.current?.abort(), []);
 
-  const load = useCallback(async (
-    search: BookSearchCriteria,
-    offset: number,
-    append: boolean,
-  ) => {
+  const load = useCallback(async (search: BookSearchCriteria, offset: number, append: boolean) => {
     if (pending.current) return;
     const controller = new AbortController();
     pending.current = controller;
     dispatch({ type: 'start', search, append });
 
     try {
-      const page = await booksService.search({
-        ...search,
-        limit: PAGE_SIZE,
-        offset,
-      }, controller.signal);
+      const page = await booksService.search(
+        {
+          ...search,
+          limit: PAGE_SIZE,
+          offset,
+        },
+        controller.signal,
+      );
       if (!controller.signal.aborted) {
         dispatch({ type: 'success', page, offset, append });
       }
@@ -116,10 +118,7 @@ export function useBookSearch(onInitialLoadSettled?: () => void) {
     }
   }, []);
 
-  const searchBooks = useCallback(
-    (search: BookSearchCriteria) => load(search, 0, false),
-    [load],
-  );
+  const searchBooks = useCallback((search: BookSearchCriteria) => load(search, 0, false), [load]);
 
   const loadMore = useCallback(() => {
     if (state.search && state.hasMore && !state.loading) {

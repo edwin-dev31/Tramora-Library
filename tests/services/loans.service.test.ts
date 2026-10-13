@@ -20,11 +20,9 @@ describe('loansService', () => {
       signal: controller.signal,
     });
 
-    expect(authorized).toHaveBeenCalledWith(
-      '/loans/active?limit=12&offset=24',
-      'session-token',
-      { signal: controller.signal },
-    );
+    expect(authorized).toHaveBeenCalledWith('/loans/active?limit=12&offset=24', 'session-token', {
+      signal: controller.signal,
+    });
   });
 
   it('renews an encoded loan id through the authenticated API', async () => {
@@ -33,11 +31,10 @@ describe('loansService', () => {
 
     await loansService.renew('loan/one', 'session-token', controller.signal);
 
-    expect(authorized).toHaveBeenCalledWith(
-      '/loans/loan%2Fone/renew',
-      'session-token',
-      { method: 'PUT', signal: controller.signal },
-    );
+    expect(authorized).toHaveBeenCalledWith('/loans/loan%2Fone/renew', 'session-token', {
+      method: 'PUT',
+      signal: controller.signal,
+    });
   });
 
   it('loads an encoded loan id through the authenticated API', async () => {
@@ -46,11 +43,9 @@ describe('loansService', () => {
 
     await loansService.getById('loan/one', 'session-token', controller.signal);
 
-    expect(authorized).toHaveBeenCalledWith(
-      '/loans/loan%2Fone',
-      'session-token',
-      { signal: controller.signal },
-    );
+    expect(authorized).toHaveBeenCalledWith('/loans/loan%2Fone', 'session-token', {
+      signal: controller.signal,
+    });
   });
 
   it('creates a loan for a book', async () => {
@@ -59,16 +54,12 @@ describe('loansService', () => {
 
     await loansService.borrow('book-1', 'session-token', controller.signal);
 
-    expect(authorized).toHaveBeenCalledWith(
-      '/loans',
-      'session-token',
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ bookId: 'book-1' }),
-        signal: controller.signal,
-      },
-    );
+    expect(authorized).toHaveBeenCalledWith('/loans', 'session-token', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ bookId: 'book-1' }),
+      signal: controller.signal,
+    });
   });
 
   it('returns a loan through the authenticated API', async () => {
@@ -76,10 +67,9 @@ describe('loansService', () => {
 
     await loansService.returnLoan('loan-1', 'session-token');
 
-    expect(authorized).toHaveBeenCalledWith(
-      '/loans/loan-1/return',
-      'session-token',
-      { method: 'PUT', signal: undefined },
-    );
+    expect(authorized).toHaveBeenCalledWith('/loans/loan-1/return', 'session-token', {
+      method: 'PUT',
+      signal: undefined,
+    });
   });
 });

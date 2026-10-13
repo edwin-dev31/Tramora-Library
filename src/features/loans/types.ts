@@ -15,5 +15,7 @@ export interface Loan {
 }
 
 export const LOAN_STATUS_LABELS: Record<LoanStatus, string> = {
-  active: 'Active', returned: 'Returned', overdue: 'Overdue',
+  active: 'Active',
+  returned: 'Returned',
+  overdue: 'Overdue',
 };
