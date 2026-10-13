@@ -15,7 +15,7 @@ A modern React library application built with Vite, TypeScript, and Tailwind CSS
 The walkthrough covers account creation, light and dark themes, catalog browsing,
 book loans and renewals, the wishlist, reading progress, and reservations.
 
-[![Watch the Tramora product walkthrough](docs/assets/tramora-product-demo.mp4)](docs/assets/tramora-product-demo.mp4)
+https://github.com/edwin-dev31/Tramora-Library/blob/main/docs/assets/tramora-product-demo.mp4
 
 [Open the live application](https://tramora.breakspacehub.com/)
 
