@@ -1,0 +1,48 @@
+@layer components {
+  .loan-tabs {
+    display: flex;
+    gap: 0.5rem;
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .loan-tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .loan-tab {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.75rem;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    color: var(--muted-foreground);
+    font-size: 0.875rem;
+    font-weight: 500;
+    white-space: nowrap;
+    transition: color 0.2s, background-color 0.2s;
+  }
+
+  .loan-tab:hover {
+    color: var(--foreground);
+    background-color: var(--accent);
+  }
+
+  .loan-tab.active {
+    background-color: var(--primary);
+    color: var(--primary-foreground);
+  }
+
+  .loan-facts {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+    font-size: 0.875rem;
+  }
+
+  .loan-facts dt {
+    color: var(--muted-foreground);
+  }
+}

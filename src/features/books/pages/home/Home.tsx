@@ -4,17 +4,14 @@ import BookCard from '@/features/books/components/book/BookCard';
 import { SEARCH_CATEGORIES, ALL_FIELDS } from '@/features/books/components/search/searchCategories';
 import { Button } from '@/shared/components/ui/button';
 import { useBookSearch } from '@/features/books/hooks/useBookSearch';
+import { useFeaturedBooks } from '@/features/books/hooks/useFeaturedBooks';
+import { BOOK_GENRES } from '@/features/books/genres';
 import { Search, Sparkles } from 'lucide-react';
 import './Home.css';
 
-const GENRES = [
-  { query: 'fantasy', label: 'Fantasy' }, { query: 'science fiction', label: 'Sci-Fi' },
-  { query: 'mystery', label: 'Mystery' }, { query: 'romance', label: 'Romance' },
-  { query: 'history', label: 'History' }, { query: 'biography', label: 'Biography' },
-];
-
 export default function Home() {
   const results = useRef<HTMLElement>(null);
+  const featured = useFeaturedBooks();
   const {
     query, field, search, books, hasMore, loading, error,
     setQuery, setField, searchBooks, loadMore, clear,
@@ -47,12 +44,15 @@ export default function Home() {
     {!search && <>
       <section className="categories" aria-labelledby="categories-title">
         <h2 id="categories-title" className="section-title">Browse by Genre</h2>
-        <div className="categories-grid">{GENRES.map(genre => <Button key={genre.label} variant="outline" disabled={loading} className="category-card" onClick={() => void searchBooks({ query: genre.query, field: 'subject' })}>{genre.label}</Button>)}</div>
+        <div className="categories-grid">{BOOK_GENRES.map(genre => <Button key={genre.label} variant="outline" disabled={loading} className="category-card" onClick={() => void searchBooks({ query: genre.query, field: 'subject' })}>{genre.label}</Button>)}</div>
       </section>
       <section className="featured" aria-labelledby="featured-title">
         <h2 id="featured-title" className="section-title">Featured Books</h2>
-        <p className="section-description">Explore fantasy picks when you are ready.</p>
-        <Button variant="outline" onClick={() => void searchBooks({ query: 'fantasy', field: 'subject' })}>Load featured books</Button>
+        <p className="section-description">Discover a selection from across the catalog.</p>
+        {featured.loading && <p role="status">Loading featured books…</p>}
+        {featured.error && <div className="home-error-state" role="alert"><p>{featured.error}</p><Button variant="outline" onClick={featured.retry}>Try again</Button></div>}
+        {!featured.loading && !featured.error && !featured.books.length && <p className="home-empty-state">No featured books are available right now.</p>}
+        <div className="books-grid featured-books-grid" role="list">{featured.books.map(book => <div key={book.id} role="listitem"><BookCard book={book} /></div>)}</div>
       </section>
     </>}
     {search && <section ref={results} className="search-results scroll-mt-24" aria-labelledby="results-title">
@@ -64,7 +64,7 @@ export default function Home() {
       {error && <div className="home-error-state" role="alert"><p>{error}</p><p>Your saved loans, wishlist and reservations are still available from the menu.</p></div>}
       {!loading && !error && !books.length && <p className="home-empty-state">No books found. Try a different search.</p>}
       <div className="books-grid" role="list">{books.map(book => <div key={book.id} role="listitem"><BookCard book={book} /></div>)}</div>
-      {hasMore && <Button variant="outline" className="w-full" disabled={loading} onClick={() => void loadMore()}>{loading ? 'Loading more…' : 'Load more books'}</Button>}
+      {hasMore && <Button variant="outline" className="search-results-more w-full" disabled={loading} onClick={() => void loadMore()}>{loading ? 'Loading more…' : 'Load more books'}</Button>}
     </section>}
   </div>;
 }

@@ -1,9 +1,5 @@
 @layer components {
-  .loans-page,
-  .loan-detail-page,
-  .reading-page,
-  .wishlist-page,
-  .reservations-page {
+  .library-page {
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
@@ -26,51 +22,7 @@
     font-size: 0.875rem;
   }
 
-  .status-tabs,
-  .reservation-tabs {
-    display: flex;
-    gap: 0.5rem;
-    overflow-x: auto;
-    padding-bottom: 0.5rem;
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
-
-  .status-tabs::-webkit-scrollbar,
-  .reservation-tabs::-webkit-scrollbar {
-    display: none;
-  }
-
-  .status-tab,
-  .reservation-tab {
-    display: inline-flex;
-    align-items: center;
-    min-height: 2.75rem;
-    padding: 0.5rem 1rem;
-    border-radius: 0.5rem;
-    color: var(--muted-foreground);
-    font-size: 0.875rem;
-    font-weight: 500;
-    white-space: nowrap;
-    transition: color 0.2s, background-color 0.2s;
-  }
-
-  .status-tab:hover,
-  .reservation-tab:hover {
-    color: var(--foreground);
-    background-color: var(--accent);
-  }
-
-  .status-tab.active,
-  .reservation-tab.active {
-    background-color: var(--primary);
-    color: var(--primary-foreground);
-  }
-
-  .loans-grid,
-  .reading-grid,
-  .wishlist-grid,
-  .reservations-grid {
+  .library-grid {
     display: grid;
     grid-template-columns: repeat(1, minmax(0, 1fr));
     gap: 1rem;
@@ -131,6 +83,10 @@
     font-size: 1rem;
   }
 
+  button[data-slot="button"] {
+    min-height: 2.75rem;
+  }
+
   .library-text-link {
     display: inline-flex;
     align-items: center;
@@ -138,17 +94,6 @@
     font-size: 0.875rem;
     text-decoration: underline;
     text-underline-offset: 0.25rem;
-  }
-
-  .library-facts {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0.75rem;
-    font-size: 0.875rem;
-  }
-
-  .library-facts dt {
-    color: var(--muted-foreground);
   }
 
   .library-notice {
@@ -186,42 +131,27 @@
   }
 }
 
-@media (min-width: 40rem) {
-  .loans-grid,
-  .reading-grid,
-  .wishlist-grid,
-  .reservations-grid {
+@variant sm {
+  .library-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
-@media (min-width: 64rem) {
-  .loans-grid,
-  .reading-grid,
-  .wishlist-grid,
-  .reservations-grid {
+@variant lg {
+  .library-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 
-@media (min-width: 80rem) {
-  .loans-grid,
-  .reading-grid,
-  .wishlist-grid,
-  .reservations-grid {
+@variant xl {
+  .library-grid {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
 
-@media (max-width: 47.99rem) {
-  input,
-  select,
-  textarea {
-    font-size: 16px !important;
-  }
-
+@variant md {
   button[data-slot="button"] {
-    min-height: 44px;
+    min-height: initial;
   }
 }
 

@@ -8,6 +8,7 @@ import { useLibraryAction } from '@/shared/hooks/useLibraryAction';
 import { loansService } from '@/features/loans/api/loans.service';
 import { reservationsService } from '@/features/reservations/api/reservations.service';
 import type { Reservation } from '@/features/reservations/types';
+import '../reservations.css';
 
 const LABELS: Record<Reservation['status'], string> = { waiting: 'Waiting', ready: 'Ready to collect', expired: 'Expired', collected: 'Collected', cancelled: 'Cancelled' };
 
@@ -26,7 +27,7 @@ function ReservationList({ history }: { history: boolean }) {
   return <>
     {action.error && <p role="alert" className="text-destructive">{action.error}</p>}
     <ListFeedback {...list} empty={!list.items.length} emptyText={history ? 'No reservation history.' : 'No active reservations. Reserve an unavailable book from its details.'} retry={list.refetch} />
-    <div className="reservations-grid" role="list">{list.items.map(item => <SavedBookCard key={item.id} book={item.book}>
+    <div className="library-grid reservations-grid" role="list">{list.items.map(item => <SavedBookCard key={item.id} book={item.book}>
       <p className="font-medium">{LABELS[item.status]}</p>
       <p className="text-sm">Requested: {new Date(item.created_at).toLocaleDateString()}</p>
       {item.status === 'waiting' && <p className="text-sm">Queue position: {item.position}</p>}
@@ -46,7 +47,7 @@ function ReservationList({ history }: { history: boolean }) {
 
 export default function ReservationsPage() {
   const [history, setHistory] = useState(false);
-  return <div className="reservations-page">
+  return <div className="library-page reservations-page">
     <header className="page-header"><h1 className="page-title">Reservations</h1><p className="page-description">Manage your book reservations</p></header>
     <div className="reservation-tabs" aria-label="Reservation filters">{[false, true].map(value => <button key={String(value)} type="button" aria-pressed={history === value} className={`reservation-tab ${history === value ? 'active' : ''}`} onClick={() => setHistory(value)}>{value ? 'History' : 'Active'}</button>)}</div>
     <ReservationList key={String(history)} history={history} />

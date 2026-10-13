@@ -42,7 +42,7 @@ export default function BookDetail() {
       refetch();
     }
   };
-  return <div className="loan-detail-page">
+  return <div className="library-page book-detail-page">
     <Link to="/" className="library-text-link">Back to books</Link>
     {isLoading && <p role="status">Loading book…</p>}
     {error && <div role="alert" className="error-state"><h1 className="page-title">Book details unavailable</h1><p>{error}</p><p>Your saved lists remain available from the menu.</p></div>}

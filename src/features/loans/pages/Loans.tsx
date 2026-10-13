@@ -5,6 +5,7 @@ import { useLibraryList } from '@/shared/hooks/useLibraryList';
 import { loansService } from '@/features/loans/api/loans.service';
 import { LOAN_STATUS_LABELS, type Loan, type LoanStatus } from '@/features/loans/types';
 import { LoanActions } from '../components/LoanActions';
+import '../loans.css';
 
 export default function LoansPage({ initialStatus = 'active', title }: { initialStatus?: LoanStatus; title: string }) {
   const history = initialStatus === 'returned';
@@ -12,14 +13,14 @@ export default function LoansPage({ initialStatus = 'active', title }: { initial
     `loans:${history ? 'history' : 'active'}`,
     history ? loansService.getHistory : loansService.getActive,
   );
-  return <div className="loans-page">
+  return <div className="library-page loans-page">
     <header className="page-header"><h1 className="page-title">{title}</h1><p className="page-description">{history ? 'Your returned books.' : 'Your active and overdue loans.'}</p></header>
-    <nav className="status-tabs" aria-label="Loan filters">
-      <Link to="/loans" aria-current={!history ? 'page' : undefined} className={`status-tab ${!history ? 'active' : ''}`}>Active</Link>
-      <Link to="/loans/returned" aria-current={history ? 'page' : undefined} className={`status-tab ${history ? 'active' : ''}`}>History</Link>
+    <nav className="loan-tabs" aria-label="Loan filters">
+      <Link to="/loans" aria-current={!history ? 'page' : undefined} className={`loan-tab ${!history ? 'active' : ''}`}>Active</Link>
+      <Link to="/loans/returned" aria-current={history ? 'page' : undefined} className={`loan-tab ${history ? 'active' : ''}`}>History</Link>
     </nav>
     <ListFeedback {...list} empty={!list.items.length} emptyText={history ? 'Your loan history is empty.' : 'You have no active loans. Browse books to find your next read.'} retry={list.refetch} />
-    <div className="loans-grid" role="list">{list.items.map(loan => <SavedBookCard key={loan.id} book={loan.book} to={`/loans/${loan.id}`}>
+    <div className="library-grid loans-grid" role="list">{list.items.map(loan => <SavedBookCard key={loan.id} book={loan.book} to={`/loans/${loan.id}`}>
       <p className={loan.status === 'overdue' ? 'text-destructive font-medium' : 'font-medium'}>{LOAN_STATUS_LABELS[loan.status]}</p>
       <p className="text-sm">Borrowed: {new Date(loan.loan_date).toLocaleDateString()}</p>
       <p className="text-sm">Due: {new Date(loan.due_date).toLocaleDateString()}</p>

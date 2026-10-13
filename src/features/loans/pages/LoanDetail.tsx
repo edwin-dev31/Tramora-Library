@@ -4,6 +4,7 @@ import { useAuth } from '@/features/auth/context/useAuth';
 import { loansService } from '@/features/loans/api/loans.service';
 import { LOAN_STATUS_LABELS, type Loan } from '@/features/loans/types';
 import { LoanActions } from '../components/LoanActions';
+import '../loans.css';
 
 export default function LoanDetail() {
   const { id } = useParams<{ id: string }>();
@@ -13,7 +14,7 @@ export default function LoanDetail() {
     requestKey,
     signal => loansService.getById(id!, accessToken!, signal),
   );
-  return <div className="loan-detail-page">
+  return <div className="library-page loan-detail-page">
     <Link to="/loans" className="library-text-link">Back to loans</Link>
     <h1 className="page-title">Loan Details</h1>
     {isLoading && <p role="status">Loading loan…</p>}
@@ -22,7 +23,7 @@ export default function LoanDetail() {
       <h2 className="text-xl font-semibold">{loan.book.title}</h2>
       <p>{loan.book.author}</p>
       <p>{LOAN_STATUS_LABELS[loan.status]}</p>
-      <dl className="library-facts">
+      <dl className="loan-facts">
         <dt>Borrowed</dt><dd>{new Date(loan.loan_date).toLocaleDateString()}</dd>
         <dt>Due date</dt><dd>{new Date(loan.due_date).toLocaleDateString()}</dd>
         <dt>Renewals used</dt><dd>{loan.renewal_count} / 2</dd>
