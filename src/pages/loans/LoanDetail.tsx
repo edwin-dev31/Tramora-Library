@@ -33,8 +33,8 @@ export default function LoanDetail() {
         {Number(loan.fine_amount) > 0 && <><dt>Late fee</dt><dd>${Number(loan.fine_amount).toFixed(2)}</dd></>}
       </dl>
       {loan.status !== 'returned' && <div className="library-actions">
-        <Button variant="outline" disabled={action.busy || loan.renewal_count >= 2} onClick={async () => { if (await action.runOperation((token, signal) => loansService.renew(loan.id, token, signal))) refetch(); }}>Renew loan</Button>
-        <Button disabled={action.busy} onClick={async () => { if (await action.runOperation((token, signal) => loansService.returnLoan(loan.id, token, signal))) refetch(); }}>Return book</Button>
+        <Button variant="outline" disabled={action.busy || loan.renewal_count >= 2} onClick={async () => { if (await action.runOperation(loan.id, (token, signal) => loansService.renew(loan.id, token, signal))) refetch(); }}>Renew loan</Button>
+        <Button disabled={action.busy} onClick={async () => { if (await action.runOperation(loan.id, (token, signal) => loansService.returnLoan(loan.id, token, signal))) refetch(); }}>Return book</Button>
       </div>}
       <Link to={`/books/${encodeURIComponent(loan.book.id)}`} className="library-text-link">Book details</Link>
     </article>}

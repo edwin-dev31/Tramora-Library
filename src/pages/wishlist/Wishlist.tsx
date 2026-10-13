@@ -17,12 +17,12 @@ export default function WishlistPage() {
     <div className="wishlist-grid" role="list">
       {list.items.map(item => <SavedBookCard key={item.id} book={item.book}>
         <label className="text-sm font-medium" htmlFor={`reading-${item.id}`}>Reading status</label>
-        <select id={`reading-${item.id}`} className="library-select" value={item.reading_status} disabled={action.busy} onChange={async event => {
+        <select id={`reading-${item.id}`} className="library-select" value={item.reading_status} disabled={action.isPending(item.id)} onChange={async event => {
           const status = event.target.value as ReadingStatus;
-          if (await action.runOperation((token, signal) => wishlistService.updateStatus(item.id, status, token, signal))) await list.refetch();
+          if (await action.runOperation(item.id, (token, signal) => wishlistService.updateStatus(item.id, status, token, signal))) await list.refetch();
         }}>{Object.entries(READING_LABELS).map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select>
-        <Button variant="outline" disabled={action.busy} onClick={async () => {
-          if (await action.runOperation((token, signal) => wishlistService.remove(item.id, token, signal))) await list.refetch();
+        <Button variant="outline" disabled={action.isPending(item.id)} onClick={async () => {
+          if (await action.runOperation(item.id, (token, signal) => wishlistService.remove(item.id, token, signal))) await list.refetch();
         }}>Remove from wishlist</Button>
       </SavedBookCard>)}
     </div>

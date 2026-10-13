@@ -3,21 +3,23 @@ import { useAuth } from '@/context/auth/useAuth';
 
 export function useLibraryAction() {
   const { accessToken } = useAuth();
-  const pending = useRef(false);
-  const active = useRef<AbortController | null>(null);
-  const [busy, setBusy] = useState(false);
+  const active = useRef(new Map<string, AbortController>());
+  const [pendingKeys, setPendingKeys] = useState<Set<string>>(() => new Set());
   const [error, setError] = useState('');
 
-  useEffect(() => () => active.current?.abort(), []);
+  useEffect(() => () => {
+    active.current.forEach(controller => controller.abort());
+    active.current.clear();
+  }, []);
 
   const runOperation = async (
+    key: string,
     operation: (accessToken: string, signal: AbortSignal) => Promise<unknown>,
   ) => {
-    if (pending.current || !accessToken) return false;
+    if (active.current.has(key) || !accessToken) return false;
     const controller = new AbortController();
-    pending.current = true;
-    active.current = controller;
-    setBusy(true);
+    active.current.set(key, controller);
+    setPendingKeys(previous => new Set(previous).add(key));
     setError('');
     try {
       await operation(accessToken, controller.signal);
@@ -27,13 +29,23 @@ export function useLibraryAction() {
       setError(error instanceof Error ? error.message : 'Unable to complete this action.');
       return false;
     } finally {
-      if (active.current === controller) {
-        active.current = null;
-        pending.current = false;
-        if (!controller.signal.aborted) setBusy(false);
+      if (active.current.get(key) === controller) {
+        active.current.delete(key);
+        if (!controller.signal.aborted) {
+          setPendingKeys(previous => {
+            const next = new Set(previous);
+            next.delete(key);
+            return next;
+          });
+        }
       }
     }
   };
 
-  return { runOperation, busy, error };
+  return {
+    runOperation,
+    busy: pendingKeys.size > 0,
+    isPending: (key: string) => pendingKeys.has(key),
+    error,
+  };
 }

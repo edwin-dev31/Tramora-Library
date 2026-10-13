@@ -23,21 +23,21 @@ export default function BookDetail() {
   const [saved, setSaved] = useState(false);
   const addToWishlist = async () => {
     setMessage('');
-    if (id && await action.runOperation((token, signal) => wishlistService.add(id, token, signal))) {
+    if (id && await action.runOperation(id, (token, signal) => wishlistService.add(id, token, signal))) {
       setMessage('Added to your wishlist.');
       setSaved(true);
     }
   };
   const reserve = async () => {
     setMessage('');
-    if (id && await action.runOperation((token, signal) => reservationsService.create(id, token, signal))) {
+    if (id && await action.runOperation(id, (token, signal) => reservationsService.create(id, token, signal))) {
       setMessage('Reservation created. Check Reservations for your queue position.');
       refetch();
     }
   };
   const borrow = async () => {
     setMessage('');
-    if (id && await action.runOperation((token, signal) => loansService.borrow(id, token, signal))) {
+    if (id && await action.runOperation(id, (token, signal) => loansService.borrow(id, token, signal))) {
       setMessage('Book borrowed. You can manage it in Active Loans.');
       refetch();
     }

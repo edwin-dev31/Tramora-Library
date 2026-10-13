@@ -1,9 +1,9 @@
-import { useEffect, useRef, useState, type FormEvent } from 'react';
-import type { Book, SearchField } from '@/types/books';
+import { useRef, type FormEvent } from 'react';
+import type { SearchField } from '@/types/books';
 import BookCard from '@/components/book/BookCard';
-import { booksService } from '@/services/books.service';
 import { SEARCH_CATEGORIES, ALL_FIELDS } from '@/components/search/searchCategories';
 import { Button } from '@/components/ui/button';
+import { useBookSearch } from '@/hooks/useBookSearch';
 import { Search, Sparkles } from 'lucide-react';
 import './Home.css';
 
@@ -12,57 +12,17 @@ const GENRES = [
   { query: 'mystery', label: 'Mystery' }, { query: 'romance', label: 'Romance' },
   { query: 'history', label: 'History' }, { query: 'biography', label: 'Biography' },
 ];
-const LIMIT = 12;
 
 export default function Home() {
-  const [query, setQuery] = useState('');
-  const [field, setField] = useState<SearchField>('all');
-  const [search, setSearch] = useState<{ query: string; field: SearchField } | null>(null);
-  const [books, setBooks] = useState<Book[]>([]);
-  const [offset, setOffset] = useState(0);
-  const [hasMore, setHasMore] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const pending = useRef<AbortController | null>(null);
   const results = useRef<HTMLElement>(null);
-  useEffect(() => () => pending.current?.abort(), []);
-
-  const load = async (next: { query: string; field: SearchField }, append = false) => {
-    if (pending.current) return;
-    const controller = new AbortController();
-    pending.current = controller;
-    const nextOffset = append ? offset : 0;
-    setLoading(true);
-    setError('');
-    setSearch(next);
-    setQuery(next.query);
-    setField(next.field);
-    if (!append) { setBooks([]); setHasMore(false); }
-    try {
-      const page = await booksService.search({
-        query: next.query,
-        field: next.field,
-        limit: LIMIT,
-        offset: nextOffset,
-      }, controller.signal);
-      if (controller.signal.aborted) return;
-      setBooks(previous => Array.from(new Map((append ? [...previous, ...page.items] : page.items).map(book => [book.id, book])).values()));
-      setOffset(nextOffset + page.items.length);
-      setHasMore(page.items.length > 0 && nextOffset + page.items.length < page.pagination.total);
-    } catch (error) {
-      if (!controller.signal.aborted) setError(error instanceof Error ? error.message : 'Unable to search books.');
-    } finally {
-      if (!controller.signal.aborted) {
-        setLoading(false);
-        pending.current = null;
-        if (!append) results.current?.scrollIntoView({ block: 'start', behavior: 'smooth' });
-      }
-    }
-  };
+  const {
+    query, field, search, books, hasMore, loading, error,
+    setQuery, setField, searchBooks, loadMore, clear,
+  } = useBookSearch(() => results.current?.scrollIntoView({ block: 'start', behavior: 'smooth' }));
 
   const submit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (query.trim()) void load({ query: query.trim(), field });
+    if (query.trim()) void searchBooks({ query: query.trim(), field });
   };
 
   return <div className="home-page">
@@ -87,24 +47,24 @@ export default function Home() {
     {!search && <>
       <section className="categories" aria-labelledby="categories-title">
         <h2 id="categories-title" className="section-title">Browse by Genre</h2>
-        <div className="categories-grid">{GENRES.map(genre => <Button key={genre.label} variant="outline" disabled={loading} className="category-card" onClick={() => void load({ query: genre.query, field: 'subject' })}>{genre.label}</Button>)}</div>
+        <div className="categories-grid">{GENRES.map(genre => <Button key={genre.label} variant="outline" disabled={loading} className="category-card" onClick={() => void searchBooks({ query: genre.query, field: 'subject' })}>{genre.label}</Button>)}</div>
       </section>
       <section className="featured" aria-labelledby="featured-title">
         <h2 id="featured-title" className="section-title">Featured Books</h2>
         <p className="section-description">Explore fantasy picks when you are ready.</p>
-        <Button variant="outline" onClick={() => void load({ query: 'fantasy', field: 'subject' })}>Load featured books</Button>
+        <Button variant="outline" onClick={() => void searchBooks({ query: 'fantasy', field: 'subject' })}>Load featured books</Button>
       </section>
     </>}
     {search && <section ref={results} className="search-results scroll-mt-24" aria-labelledby="results-title">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0"><h2 id="results-title" className="section-title break-words">Results for “{search.query}”</h2><p className="text-sm text-muted-foreground">{search.field === 'all' ? 'All fields' : SEARCH_CATEGORIES.find(option => option.keyword === search.field)?.label}</p></div>
-        <Button variant="outline" disabled={loading} onClick={() => { setSearch(null); setBooks([]); setQuery(''); setError(''); setHasMore(false); }}>Clear</Button>
+        <Button variant="outline" disabled={loading} onClick={clear}>Clear</Button>
       </div>
       {loading && <p role="status">Loading books…</p>}
       {error && <div className="error-state" role="alert"><p>{error}</p><p>Your saved loans, wishlist and reservations are still available from the menu.</p></div>}
       {!loading && !error && !books.length && <p className="empty-state">No books found. Try a different search.</p>}
       <div className="books-grid" role="list">{books.map(book => <div key={book.id} role="listitem"><BookCard book={book} /></div>)}</div>
-      {hasMore && <Button variant="outline" className="w-full" disabled={loading} onClick={() => void load(search, true)}>{loading ? 'Loading more…' : 'Load more books'}</Button>}
+      {hasMore && <Button variant="outline" className="w-full" disabled={loading} onClick={() => void loadMore()}>{loading ? 'Loading more…' : 'Load more books'}</Button>}
     </section>}
   </div>;
 }

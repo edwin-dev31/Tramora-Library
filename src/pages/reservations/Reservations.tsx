@@ -18,10 +18,10 @@ function ReservationList({ history }: { history: boolean }) {
   );
   const action = useLibraryAction();
   const updateNotifications = async (reservationId: string, enabled: boolean) => {
-    if (await action.runOperation((token, signal) => reservationsService.updateNotifications(reservationId, enabled, token, signal))) await list.refetch();
+    if (await action.runOperation(reservationId, (token, signal) => reservationsService.updateNotifications(reservationId, enabled, token, signal))) await list.refetch();
   };
   const cancelReservation = async (reservationId: string) => {
-    if (await action.runOperation((token, signal) => reservationsService.cancel(reservationId, token, signal))) await list.refetch();
+    if (await action.runOperation(reservationId, (token, signal) => reservationsService.cancel(reservationId, token, signal))) await list.refetch();
   };
   return <>
     {action.error && <p role="alert" className="text-destructive">{action.error}</p>}
@@ -33,11 +33,11 @@ function ReservationList({ history }: { history: boolean }) {
       {item.estimated_available_at && <p className="text-sm">Estimated availability: {new Date(item.estimated_available_at).toLocaleDateString()}</p>}
       {item.status === 'ready' && item.expires_at && <p className="text-sm">Collect before: {new Date(item.expires_at).toLocaleString()}</p>}
       {!history && <>
-        <label className="flex items-center gap-3 min-h-11 text-sm"><input type="checkbox" checked={item.notifications_enabled} disabled={action.busy} onChange={event => void updateNotifications(item.id, event.target.checked)} />Reservation notifications</label>
-        {item.status === 'ready' && <Button disabled={action.busy} onClick={async () => {
-          if (await action.runOperation((token, signal) => loansService.borrow(item.book.id, token, signal))) await list.refetch();
+        <label className="flex items-center gap-3 min-h-11 text-sm"><input type="checkbox" checked={item.notifications_enabled} disabled={action.isPending(item.id)} onChange={event => void updateNotifications(item.id, event.target.checked)} />Reservation notifications</label>
+        {item.status === 'ready' && <Button disabled={action.isPending(item.id)} onClick={async () => {
+          if (await action.runOperation(item.id, (token, signal) => loansService.borrow(item.book.id, token, signal))) await list.refetch();
         }}>Borrow book</Button>}
-        <Button variant="outline" disabled={action.busy} onClick={() => void cancelReservation(item.id)}>Cancel reservation</Button>
+        <Button variant="outline" disabled={action.isPending(item.id)} onClick={() => void cancelReservation(item.id)}>Cancel reservation</Button>
       </>}
     </SavedBookCard>)}</div>
     <ListMore {...list} />

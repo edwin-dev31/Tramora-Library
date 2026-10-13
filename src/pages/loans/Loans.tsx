@@ -28,8 +28,8 @@ export default function LoansPage({ initialStatus = 'active', title }: { initial
       <p className="text-sm">Due: {new Date(loan.due_date).toLocaleDateString()}</p>
       {loan.return_date && <p className="text-sm">Returned: {new Date(loan.return_date).toLocaleDateString()}</p>}
       {loan.status !== 'returned' && <div className="library-actions">
-        <Button variant="outline" disabled={action.busy || loan.renewal_count >= 2} onClick={async () => { if (await action.runOperation((token, signal) => loansService.renew(loan.id, token, signal))) await list.refetch(); }}>Renew ({Math.max(0, 2 - loan.renewal_count)} left)</Button>
-        <Button disabled={action.busy} onClick={async () => { if (await action.runOperation((token, signal) => loansService.returnLoan(loan.id, token, signal))) await list.refetch(); }}>Return book</Button>
+        <Button variant="outline" disabled={action.isPending(loan.id) || loan.renewal_count >= 2} onClick={async () => { if (await action.runOperation(loan.id, (token, signal) => loansService.renew(loan.id, token, signal))) await list.refetch(); }}>Renew ({Math.max(0, 2 - loan.renewal_count)} left)</Button>
+        <Button disabled={action.isPending(loan.id)} onClick={async () => { if (await action.runOperation(loan.id, (token, signal) => loansService.returnLoan(loan.id, token, signal))) await list.refetch(); }}>Return book</Button>
       </div>}
     </SavedBookCard>)}</div>
     <ListMore {...list} />
