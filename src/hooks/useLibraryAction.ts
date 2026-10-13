@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from 'react';
-import { apiClient } from '@/lib/fetch';
 import { useAuth } from '@/context/auth/useAuth';
 
 export function useLibraryAction() {
@@ -36,12 +35,5 @@ export function useLibraryAction() {
     }
   };
 
-  const run = (path: string, method: 'POST' | 'PUT' | 'DELETE', body?: unknown) =>
-    runOperation((token, signal) => apiClient.authorized(path, token, {
-      method,
-      signal,
-      ...(body === undefined ? {} : { headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }),
-    }));
-
-  return { run, runOperation, busy, error };
+  return { runOperation, busy, error };
 }

@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { apiClient } from '@/lib/fetch';
 import { useAuth } from '@/context/auth/useAuth';
 import type { ListRequest } from '@/types/api';
 
@@ -8,7 +7,7 @@ const PAGE_SIZE = 12;
 type ListLoader<T> = (accessToken: string, request: ListRequest) => Promise<T[]>;
 
 // Personal-library endpoints return arrays, unlike the paginated Google catalog.
-export function useLibraryList<T extends { id: string }>(source: string, loader?: ListLoader<T>) {
+export function useLibraryList<T extends { id: string }>(source: string, loader: ListLoader<T>) {
   const { accessToken } = useAuth();
   const key = `${accessToken}:${source}`;
   const [state, setState] = useState({ key, items: [] as T[], loading: true, error: '', hasMore: false });
@@ -23,9 +22,7 @@ export function useLibraryList<T extends { id: string }>(source: string, loader?
     const offset = append ? items.current.length : 0;
     setState(previous => ({ ...previous, loading: true, error: '', ...(append ? {} : { items: [] }) }));
     try {
-      const page = loader
-        ? await loader(accessToken, { limit: PAGE_SIZE, offset, signal: controller.signal })
-        : await apiClient.authorized<T[]>(`${source}${source.includes('?') ? '&' : '?'}limit=${PAGE_SIZE}&offset=${offset}`, accessToken, { signal: controller.signal });
+      const page = await loader(accessToken, { limit: PAGE_SIZE, offset, signal: controller.signal });
       if (controller.signal.aborted) return;
       const combined = append ? [...items.current, ...page] : page;
       items.current = Array.from(new Map(combined.map(item => [item.id, item])).values());

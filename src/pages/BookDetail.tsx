@@ -6,6 +6,7 @@ import { useLibraryAction } from '@/hooks/useLibraryAction';
 import { useAuth } from '@/context/auth/useAuth';
 import { booksService } from '@/services/books.service';
 import { loansService } from '@/services/loans.service';
+import { reservationsService } from '@/services/reservations.service';
 import { wishlistService } from '@/services/wishlist.service';
 import type { BookDetails } from '@/types/books';
 
@@ -29,7 +30,7 @@ export default function BookDetail() {
   };
   const reserve = async () => {
     setMessage('');
-    if (id && await action.run('/reservations', 'POST', { bookId: id })) {
+    if (id && await action.runOperation((token, signal) => reservationsService.create(id, token, signal))) {
       setMessage('Reservation created. Check Reservations for your queue position.');
       refetch();
     }
