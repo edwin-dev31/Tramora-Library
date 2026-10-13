@@ -4,7 +4,7 @@ export default {
   setupFiles: ['<rootDir>/jest.polyfill.js'],
   setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
   moduleNameMapper: {
-    '^@/config/env$': '<rootDir>/__mocks__/config/env.ts',
+    '^@/shared/config/env$': '<rootDir>/__mocks__/config/env.ts',
     '^@/(.*)$': '<rootDir>/src/$1',
     '\\.css$': 'identity-obj-proxy',
     '^react-router$': '<rootDir>/__mocks__/react-router.tsx',

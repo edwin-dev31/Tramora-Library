@@ -16,7 +16,7 @@
   margin: calc(-1 * var(--header-padding-y, 2rem)) calc(-1 * var(--header-padding-x, 1rem)) 0;
 }
 
-@media (min-width: 48rem) {
+@media (--md) {
   .hero {
     padding-left: 2rem;
     padding-right: 2rem;
@@ -78,7 +78,7 @@
   animation: fadeInUp 0.5s ease-out 0.3s both;
 }
 
-@media (min-width: 48rem) {
+@media (--md) {
   .hero-search {
     flex-direction: row;
     align-items: stretch;
@@ -92,7 +92,7 @@
   flex: 1;
 }
 
-@media (min-width: 48rem) {
+@media (--md) {
   .hero-search-fields {
     flex-direction: row;
     gap: 0.75rem;
@@ -104,7 +104,7 @@
   min-width: 140px;
 }
 
-@media (min-width: 48rem) {
+@media (--md) {
   .hero-search-select {
     width: auto;
     flex-shrink: 0;
@@ -135,7 +135,7 @@
   box-shadow: 0 0.5rem 1.25rem -1rem color-mix(in oklab, var(--primary) 30%, transparent);
 }
 
-@media (min-width: 48rem) {
+@media (--md) {
   .hero-search-input {
     height: 3.25rem;
   }
@@ -152,7 +152,7 @@
   box-shadow: 0 0.6rem 1.2rem -0.8rem color-mix(in oklab, var(--primary) 70%, transparent);
 }
 
-@media (min-width: 48rem) {
+@media (--md) {
   .hero-search-btn {
     width: auto;
     height: 3.25rem;
@@ -297,13 +297,13 @@
   gap: 1rem;
 }
 
-@media (min-width: 40rem) {
+@media (--sm) {
   .books-grid {
     gap: 1.25rem;
   }
 }
 
-@media (min-width: 64rem) {
+@media (--lg) {
   .books-grid {
     gap: 1.5rem;
   }
@@ -313,7 +313,7 @@
   display: contents;
 }
 
-.empty-state {
+.home-empty-state {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -375,7 +375,7 @@
   border-bottom: 0.0625rem solid var(--border);
 }
 
-@media (min-width: 48rem) {
+@media (--md) {
   .results-header {
     flex-direction: row;
     align-items: flex-start;
@@ -413,7 +413,7 @@
   margin: 0;
 }
 
-.error-state {
+.home-error-state {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -426,20 +426,6 @@
 .error-text {
   margin: 0;
   font-size: 1rem;
-}
-
-.load-more {
-  display: flex;
-  justify-content: center;
-  padding: 1.5rem 0;
-}
-
-.load-more-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1.5rem;
-  font-weight: 500;
 }
 
 @keyframes fadeInUp {
@@ -470,7 +456,7 @@
   height: 100%;
 }
 
-@media (min-width: 40rem) {
+@media (--sm) {
   .book-card-skeleton {
     flex-direction: row;
   }
@@ -484,13 +470,13 @@
   background: var(--muted);
 }
 
-@media (min-width: 40rem) {
+@media (--sm) {
   .book-cover-skeleton {
     align-self: flex-start;
   }
 }
 
-@media (min-width: 64rem) {
+@media (--lg) {
   .book-cover-skeleton {
     width: 8rem;
     min-width: 8rem;

@@ -61,8 +61,8 @@ export default function Home() {
         <Button variant="outline" disabled={loading} onClick={clear}>Clear</Button>
       </div>
       {loading && <p role="status">Loading books…</p>}
-      {error && <div className="error-state" role="alert"><p>{error}</p><p>Your saved loans, wishlist and reservations are still available from the menu.</p></div>}
-      {!loading && !error && !books.length && <p className="empty-state">No books found. Try a different search.</p>}
+      {error && <div className="home-error-state" role="alert"><p>{error}</p><p>Your saved loans, wishlist and reservations are still available from the menu.</p></div>}
+      {!loading && !error && !books.length && <p className="home-empty-state">No books found. Try a different search.</p>}
       <div className="books-grid" role="list">{books.map(book => <div key={book.id} role="listitem"><BookCard book={book} /></div>)}</div>
       {hasMore && <Button variant="outline" className="w-full" disabled={loading} onClick={() => void loadMore()}>{loading ? 'Loading more…' : 'Load more books'}</Button>}
     </section>}
