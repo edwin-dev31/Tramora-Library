@@ -1,13 +1,8 @@
 import { API_ROUTES } from '@/constants/api.constants';
 import { apiClient } from '@/lib/fetch';
+import type { ListRequest } from '@/types/api';
 import type { ReadingEntry } from '@/types/library';
 import type { Loan } from '@/types/loans';
-
-interface ListRequest {
-  limit: number;
-  offset: number;
-  signal: AbortSignal;
-}
 
 const list = <T>(path: string, accessToken: string, request: ListRequest) => {
   const params = new URLSearchParams({
@@ -54,5 +49,3 @@ export const loansService = {
       signal,
     }),
 };
-
-export type { ListRequest as LoanListRequest };

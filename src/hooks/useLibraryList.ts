@@ -1,14 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { apiClient } from '@/lib/fetch';
 import { useAuth } from '@/context/auth/useAuth';
+import type { ListRequest } from '@/types/api';
 
 const PAGE_SIZE = 12;
-
-interface ListRequest {
-  limit: number;
-  offset: number;
-  signal: AbortSignal;
-}
 
 type ListLoader<T> = (accessToken: string, request: ListRequest) => Promise<T[]>;
 

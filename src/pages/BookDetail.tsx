@@ -6,6 +6,7 @@ import { useLibraryAction } from '@/hooks/useLibraryAction';
 import { useAuth } from '@/context/auth/useAuth';
 import { booksService } from '@/services/books.service';
 import { loansService } from '@/services/loans.service';
+import { wishlistService } from '@/services/wishlist.service';
 import type { BookDetails } from '@/types/books';
 
 export default function BookDetail() {
@@ -19,12 +20,18 @@ export default function BookDetail() {
   const action = useLibraryAction();
   const [message, setMessage] = useState('');
   const [saved, setSaved] = useState(false);
-  const perform = async (path: string, success: string) => {
+  const addToWishlist = async () => {
     setMessage('');
-    if (await action.run(path, 'POST', { bookId: id })) {
-      setMessage(success);
-      if (path === '/wishlist') setSaved(true);
-      else refetch();
+    if (id && await action.runOperation((token, signal) => wishlistService.add(id, token, signal))) {
+      setMessage('Added to your wishlist.');
+      setSaved(true);
+    }
+  };
+  const reserve = async () => {
+    setMessage('');
+    if (id && await action.run('/reservations', 'POST', { bookId: id })) {
+      setMessage('Reservation created. Check Reservations for your queue position.');
+      refetch();
     }
   };
   const borrow = async () => {
@@ -48,8 +55,8 @@ export default function BookDetail() {
       <p className="text-sm">{book.availability.borrowedByMe ? 'You have borrowed this book.' : book.availability.reservedByMe ? 'You have reserved this book.' : `Availability: ${book.availability.status}`}</p>
       <div className="library-actions">
         <Button disabled={action.busy || !book.availability.canBorrow} onClick={() => void borrow()}>Borrow book</Button>
-        <Button variant="outline" disabled={action.busy || saved} onClick={() => void perform('/wishlist', 'Added to your wishlist.')}>{saved ? 'Added to wishlist' : 'Add to wishlist'}</Button>
-        {book.availability.canReserve && <Button variant="outline" disabled={action.busy} onClick={() => void perform('/reservations', 'Reservation created. Check Reservations for your queue position.')}>Reserve book</Button>}
+        <Button variant="outline" disabled={action.busy || saved} onClick={() => void addToWishlist()}>{saved ? 'Added to wishlist' : 'Add to wishlist'}</Button>
+        {book.availability.canReserve && <Button variant="outline" disabled={action.busy} onClick={() => void reserve()}>Reserve book</Button>}
       </div>
       {book.description && <p className="whitespace-pre-line break-words text-sm leading-relaxed">{book.description.replace(/<[^>]*>/g, '')}</p>}
       <nav className="flex flex-wrap gap-4"><Link className="library-text-link" to="/loans">Active loans</Link><Link className="library-text-link" to="/wishlist">Wishlist</Link><Link className="library-text-link" to="/reservations">Reservations</Link></nav>

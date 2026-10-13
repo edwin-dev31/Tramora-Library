@@ -17,3 +17,9 @@ export interface Page<T> {
   items: T[];
   pagination: { total: number; offset: number; limit: number };
 }
+
+export interface ListRequest {
+  limit: number;
+  offset: number;
+  signal: AbortSignal;
+}
