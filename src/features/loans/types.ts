@@ -1,4 +1,4 @@
-import type { SavedBook } from './library';
+import type { SavedBook } from '@/shared/types/books';
 
 export type LoanStatus = 'active' | 'returned' | 'overdue';
 export interface Loan {

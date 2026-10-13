@@ -1,1 +1,1 @@
-export * from './errors';
+export * from '@/features/errors/pages';
