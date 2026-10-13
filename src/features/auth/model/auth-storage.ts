@@ -4,7 +4,7 @@ const SESSION_KEY = 'library.auth.session';
 
 export const clearAuthSession = (): void => {
   try {
-    sessionStorage.removeItem(SESSION_KEY);
+    localStorage.removeItem(SESSION_KEY);
   } catch {
     // Authentication remains available when browser storage is blocked.
   }
@@ -12,7 +12,7 @@ export const clearAuthSession = (): void => {
 
 export const readAuthSession = (): AuthSession | null => {
   try {
-    const stored = sessionStorage.getItem(SESSION_KEY);
+    const stored = localStorage.getItem(SESSION_KEY);
     if (!stored) return null;
     const session: unknown = JSON.parse(stored);
     if (
@@ -25,7 +25,7 @@ export const readAuthSession = (): AuthSession | null => {
       return { accessToken: session.accessToken, expiresAt: session.expiresAt };
     }
   } catch {
-    // Ignore corrupt data and browsers that do not allow session storage.
+    // Ignore corrupt data and browsers that do not allow local storage.
   }
   clearAuthSession();
   return null;
@@ -33,7 +33,7 @@ export const readAuthSession = (): AuthSession | null => {
 
 export const saveAuthSession = (session: AuthSession): void => {
   try {
-    sessionStorage.setItem(SESSION_KEY, JSON.stringify(session));
+    localStorage.setItem(SESSION_KEY, JSON.stringify(session));
   } catch {
     // Keep this session in memory if persistence is unavailable.
   }

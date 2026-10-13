@@ -34,7 +34,7 @@ const renderProvider = () => render(<AuthProvider><AuthProbe /></AuthProvider>);
 
 describe('AuthProvider session lifecycle', () => {
   beforeEach(() => {
-    window.sessionStorage.clear();
+    window.localStorage.clear();
     login.mockReset();
     getCurrentUser.mockReset();
   });
@@ -65,7 +65,7 @@ describe('AuthProvider session lifecycle', () => {
       expect.any(AbortSignal),
     );
     expect(getCurrentUser).toHaveBeenCalledWith('new-token', expect.any(AbortSignal));
-    expect(JSON.parse(window.sessionStorage.getItem('library.auth.session') ?? '{}')).toMatchObject({
+    expect(JSON.parse(window.localStorage.getItem('library.auth.session') ?? '{}')).toMatchObject({
       accessToken: 'new-token',
       expiresAt: expect.any(Number),
     });
