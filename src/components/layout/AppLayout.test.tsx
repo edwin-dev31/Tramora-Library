@@ -40,6 +40,8 @@ const renderAppLayout = () => {
 describe('AppLayout', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    window.localStorage.clear();
+    document.documentElement.classList.remove('dark');
     mockUser = null;
     mockStatus = 'unauthenticated';
   });
@@ -47,7 +49,20 @@ describe('AppLayout', () => {
   it('renders header with logo and title', () => {
     renderAppLayout();
     expect(screen.getByText('Library')).toBeInTheDocument();
-    expect(screen.getByTestId('icon-bookopen')).toBeInTheDocument();
+    const logoLink = screen.getByRole('link', { name: 'Library Home' });
+    expect(logoLink.querySelector('img')).toHaveAttribute('src', '/logo.svg');
+  });
+
+  it('switches to dark mode and persists the preference', () => {
+    renderAppLayout();
+    const themeSwitch = screen.getByRole('switch', { name: 'Dark mode' });
+
+    expect(themeSwitch).not.toBeChecked();
+    fireEvent.click(themeSwitch);
+
+    expect(themeSwitch).toBeChecked();
+    expect(document.documentElement).toHaveClass('dark');
+    expect(window.localStorage.getItem('library-theme')).toBe('dark');
   });
 
   it('renders login and sign up buttons when unauthenticated', () => {

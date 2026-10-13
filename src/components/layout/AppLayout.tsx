@@ -3,6 +3,7 @@ import { Dialog } from 'radix-ui';
 import { LogOut, Menu, X } from 'lucide-react';
 import { Link, Outlet, useLocation } from 'react-router';
 import { Button } from '@/components/ui/button';
+import ThemeSwitch from '@/components/theme/ThemeSwitch';
 import { useAuth } from '@/context/auth/useAuth';
 import './AppLayout.css';
 
@@ -29,6 +30,7 @@ const AppLayout = () => {
       <div className="library-header-inner mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3">
         <Link to="/" className="library-brand flex items-center gap-2 font-semibold text-lg" aria-label="Library Home"><span className="library-brand-mark"><img src="/logo.svg" alt="" aria-hidden="true" className="library-brand-logo" /></span><span>Library</span></Link>
         <nav aria-label="Main navigation" className="library-account flex items-center gap-2">
+          <ThemeSwitch />
           {status === 'loading' ? <span role="status" className="text-sm text-muted-foreground">Restoring session…</span> : <>
             <Dialog.Root open={isMenuOpen} onOpenChange={setIsMenuOpen}>
               <Dialog.Trigger asChild><Button type="button" variant="ghost" size="icon" className="md:hidden min-h-11 min-w-11" aria-label="Open menu"><Menu className="size-5" aria-hidden="true" /></Button></Dialog.Trigger>
