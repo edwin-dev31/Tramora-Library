@@ -15,9 +15,5 @@ export const ALL_FIELDS: SearchCategory = {
 export const SEARCH_CATEGORIES: SearchCategory[] = [
   { label: 'Title', keyword: 'title', placeholder: 'e.g. harry potter' },
   { label: 'Author', keyword: 'author', placeholder: 'e.g. J.K. Rowling' },
-  { label: 'Publisher', keyword: 'publisher', placeholder: 'e.g. Penguin' },
-  { label: 'Subject', keyword: 'subject', placeholder: 'e.g. fantasy' },
   { label: 'ISBN', keyword: 'isbn', placeholder: 'e.g. 9780439064873' },
-  { label: 'LCCN', keyword: 'lccn', placeholder: 'Library of Congress Control Number' },
-  { label: 'OCLC', keyword: 'oclc', placeholder: 'Online Computer Library Center number' },
 ];

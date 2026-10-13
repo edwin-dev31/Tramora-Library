@@ -17,7 +17,7 @@ export interface BookDetails extends Book {
   };
 }
 
-export type SearchField = 'all' | 'title' | 'author' | 'publisher' | 'subject' | 'isbn' | 'lccn' | 'oclc';
+export type SearchField = 'all' | 'title' | 'author' | 'subject' | 'isbn';
 export interface SearchOptions {
   query: string;
   field?: SearchField;
