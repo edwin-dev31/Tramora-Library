@@ -9,7 +9,7 @@
 
 .hero {
   position: relative;
-  margin: calc(-1 * var(--header-padding-y, 2rem)) calc(-1 * var(--header-padding-x, 1rem)) 0;
+  margin: 0;
   padding: 1.5rem 1rem;
   border: 1px solid color-mix(in oklab, var(--border) 80%, transparent);
   border-radius: 1.5rem;
@@ -109,7 +109,6 @@
 }
 
 .hero-search-btn {
-  order: -1;
   width: 100%;
   height: 3rem;
   gap: 0.5rem;
@@ -145,7 +144,7 @@
 
 .categories,
 .search-results {
-  padding-inline: 0.5rem;
+  padding-inline: 0;
 }
 
 .categories .section-title,
@@ -274,11 +273,8 @@
 
 @variant sm {
   .hero {
+    margin-inline: calc(-1 * var(--header-padding-x, 1rem));
     padding: clamp(2rem, 6vw, 4rem) 1rem;
-  }
-
-  .hero-search-btn {
-    order: 0;
   }
 
   .categories-grid {
